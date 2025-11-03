@@ -1,18 +1,68 @@
-# Archivos de caché de Python
-_pycache_/
-*.pyc
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
 
-# Base de datos de desarrollo
-db.sqlite3
-*.sqlite3
+# C extensions
+*.so
 
-# Entorno virtual
-venv/
+# Distribution / packaging
+.Python
 env/
-.venv/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# Archivos de configuración local (si los tuvieras)
-.env
-
-# Archivos estáticos recolectados por Django
+# Django stuff:
+*.log
+*.pot
+*.pyc
+*.sqlite3
+db.sqlite3
+media/
 staticfiles/
+*.mo
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# IDEs and editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Env variables
+.env
