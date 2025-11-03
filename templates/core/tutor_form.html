@@ -1,0 +1,19 @@
+{% extends 'core/panel.html' %}
+{% block content %}
+    <div class="card shadow-sm">
+      <div class="card-body">
+        {% if form.instance.pk %}
+            <h3 class="card-title">Editar Tutor</h3>
+        {% else %}
+            <h3 class="card-title">Registrar Nuevo Tutor</h3>
+        {% endif %}
+        <hr>
+        <form method="post" class="mt-4">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary mt-3">Guardar</button>
+            <a href="{% url 'listar_tutores' %}" class="btn btn-secondary mt-3">Volver al Listado</a>
+        </form>
+      </div>
+    </div>
+{% endblock %}

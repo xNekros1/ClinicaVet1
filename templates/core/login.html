@@ -1,0 +1,51 @@
+{% extends "core/base.html" %}
+{% load static %} {% block title %}Ingreso - ClínicaVet+{% endblock %}
+
+{% block body %}
+<div class="container">
+  <div class="row justify-content-center align-items-center" style="height: 100vh;">
+    <div class="col-md-5">
+      <div class="card shadow-lg">
+        <div class="position-absolute top-0 end-0 p-3">
+          <button class="btn btn-outline-secondary" id="theme-toggle" type="button">
+            <i class="bi bi-sun-fill" id="theme-icon-light"></i>
+            <i class="bi bi-moon-fill" id="theme-icon-dark"></i>
+          </button>
+        </div>
+        
+        <div class="card-body p-5">
+          <h1 class="text-center h3 mb-4">
+            <img src="{% static 'img/logo.jpg' %}" alt="Logo" style="height: 40px; margin-right: 10px;">
+            Sistema de Agenda
+          </h1>
+          
+          <form method="POST" action="{% url 'login' %}">
+            {% csrf_token %} 
+            
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" name="email" placeholder="admin@correo.com" required>
+            </div>
+            
+            <div class="mb-3">
+              <label for="password" class="form-label">Contraseña</label>
+              <input type="password" class="form-control" id="password" name="password" placeholder="******" required>
+            </div>
+            
+            {% if error %}
+              <div class="alert alert-danger" role="alert">
+                {{ error }}
+              </div>
+            {% endif %}
+            
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary btn-lg">Ingresar</button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

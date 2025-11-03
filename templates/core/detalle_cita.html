@@ -1,0 +1,44 @@
+{% extends 'core/panel.html' %}
+
+{% block content %}
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h3 class="card-title">Detalles de la Cita</h3>
+        <hr>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-bold">Paciente</label>
+            <input type="text" value="{{ cita.paciente }}" class="form-control" readonly>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-bold">Tutor</label>
+            <input type="text" value="{{ cita.paciente.tutor }}" class="form-control" readonly>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-bold">Veterinario</label>
+            <input type="text" value="{{ cita.veterinario }}" class="form-control" readonly>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-bold">Fecha y Hora</label>
+            <input type="text" value="{{ cita.fecha_hora|date:'l d \d\e F, H:i \h\s.' }}" class="form-control" readonly>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-bold">Motivo de la Consulta</label>
+            <textarea class="form-control" readonly>{{ cita.motivo_consulta }}</textarea>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-bold">Estado de la Cita</label>
+            <input type="text" value="{{ cita.get_estado_display }}" class="form-control" readonly>
+          </div>
+        </div>
+        
+        <div class="mt-3">
+            <a href="{% url 'listar_citas' %}?fecha={{ fecha_agenda }}" class="btn btn-secondary">Volver a la Agenda</a>
+        </div>
+      </div>
+    </div>
+{% endblock %}

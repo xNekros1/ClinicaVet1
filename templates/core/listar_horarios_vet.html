@@ -1,0 +1,22 @@
+{% extends 'core/panel.html' %}
+{% block content %}
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h3 class="card-title">Gestionar Horarios</h3>
+        <p class="card-subtitle mb-2 text-muted">Seleccione un veterinario para ver, añadir o eliminar sus bloques de horario laboral.</p>
+        <hr>
+
+        <div class="list-group">
+            {% for vet in veterinarios %}
+                <a href="{% url 'gestionar_horarios' vet.pk %}" class="list-group-item list-group-item-action">
+                    {{ vet }}
+                    <span class="text-muted small d-block">{{ vet.especialidad|default:"Generalista" }}</span>
+                </a>
+            {% empty %}
+                <p class="text-center">No hay veterinarios registrados en el sistema.</p>
+                <p class="text-center"><small>Debe crear un usuario con rol 'Veterinario' y luego un perfil de 'Veterinario' en el <a href="/admin/">panel de administración</a>.</small></p>
+            {% endfor %}
+        </div>
+      </div>
+    </div>
+{% endblock %}

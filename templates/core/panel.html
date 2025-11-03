@@ -1,0 +1,76 @@
+{% extends "core/base.html" %}
+{% load static %} {% block title %}Panel - ClínicaVet+{% endblock %}
+
+{% block body %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand d-flex align-items-center" href="{% url 'panel' %}">
+      <img src="{% static 'img/logo.jpg' %}" alt="ClínicaVet Logo">
+      ClínicaVet+
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
+            <i class="bi bi-person-circle"></i> {{ user.nombre }} ({{ user.get_rol_display }})
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><button class="dropdown-item d-flex align-items-center" id="theme-toggle" type="button">...</button></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{% url 'logout' %}">Cerrar Sesión</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="panel-main">
+  <aside class="sidebar border-end">
+    <div class="nav flex-column nav-pills" role="tablist" aria-orientation="vertical">
+      
+      {% if user.rol == "ADMIN" or user.rol == "RECEPCIONISTA" or user.rol == "VETERINARIO" %}
+        <a href="{% url 'listar_citas' %}" 
+           class="nav-link {% if 'cita' in request.resolver_match.url_name %}active{% endif %}">
+           <i class="bi bi-calendar-week me-2"></i> Agenda
+        </a>
+      {% endif %}
+
+      {% if user.rol == "ADMIN" or user.rol == "VETERINARIO" or user.rol == "RECEPCIONISTA" %}
+        <a href="{% url 'listar_pacientes' %}" 
+           class="nav-link {% if 'paciente' in request.resolver_match.url_name %}active{% endif %}">
+           <i class="bi bi-heart-pulse me-2"></i> Pacientes
+        </a>
+      {% endif %}
+
+      {% if user.rol == "ADMIN" or user.rol == "RECEPCIONISTA" %}
+        <a href="{% url 'listar_tutores' %}" 
+           class="nav-link {% if 'tutor' in request.resolver_match.url_name %}active{% endif %}">
+           <i class="bi bi-people me-2"></i> Tutores
+        </a>
+      {% endif %}
+
+      {% if user.rol == "ADMIN" %}
+        <a href="{% url 'listar_horarios_vet' %}" 
+           class="nav-link {% if 'horario' in request.resolver_match.url_name %}active{% endif %}">
+           <i class="bi bi-clock-history me-2"></i> Gestionar Horarios
+        </a>
+        <a href="#" class="nav-link"><i class="bi bi-person-vcard me-2"></i> Gestionar Personal</a>
+        <a href="#" class="nav-link"><i class="bi bi-clipboard-data me-2"></i> Reportes</a>
+      {% endif %}
+    </div>
+    
+    <div class="sidebar-slogan mt-auto">
+      "Cuidamos de ellos como familia"
+    </div>
+  </aside>
+
+  <main class="content">
+    {% block content %}
+    {% endblock %}
+  </main>
+</div>
+{% endblock %}

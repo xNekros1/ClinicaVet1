@@ -1,0 +1,13 @@
+{% extends 'core/panel.html' %}
+
+{% block content %}
+    <h3>Confirmar Cancelación</h3>
+    <p>¿Estás seguro que quieres cancelar la cita de <strong>{{ cita.paciente }}</strong> 
+       el día <strong>{{ cita.fecha_hora|date:"d/m/Y \a \l\a\s H:i" }}</strong>?</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn-principal">Sí, Cancelar</button>
+         <a href="{%url 'listar_citas'%}">No, Volver</a>
+    </form>
+{% endblock %}

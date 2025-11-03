@@ -1,0 +1,18 @@
+# Archivos de caché de Python
+_pycache_/
+*.pyc
+
+# Base de datos de desarrollo
+db.sqlite3
+*.sqlite3
+
+# Entorno virtual
+venv/
+env/
+.venv/
+
+# Archivos de configuración local (si los tuvieras)
+.env
+
+# Archivos estáticos recolectados por Django
+staticfiles/

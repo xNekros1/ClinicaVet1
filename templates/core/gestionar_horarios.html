@@ -1,0 +1,65 @@
+{% extends 'core/panel.html' %}
+{% block content %}
+
+    <a href="{% url 'listar_horarios_vet' %}" class="btn btn-secondary mb-3"><i class="bi bi-arrow-left"></i> Volver a la lista</a>
+
+    <div class="row">
+        <div class="col-md-5">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="card-title">Añadir Bloque Horario</h4>
+                    <p class="text-muted">Para {{ veterinario }}</p>
+                    <hr>
+                    <form method="POST">
+                        {% csrf_token %}
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-primary mt-3">Añadir Bloque</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-7">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="card-title">Horarios Activos</h4>
+                    <p class="text-muted">De {{ veterinario }}</p>
+                    <hr>
+                    {% if not horarios %}
+                        <p class="text-center">Este veterinario aún no tiene bloques de horario definidos.</p>
+                    {% else %}
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Día</th>
+                                    <th>Inicio</th>
+                                    <th>Fin</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for horario in horarios %}
+                                <tr>
+                                    <td>{{ horario.get_dia_semana_display }}</td>
+                                    <td>{{ horario.hora_inicio|time:"H:i" }}</td>
+                                    <td>{{ horario.hora_fin|time:"H:i" }}</td>
+                                    <td>
+                                        <a href="{% url 'eliminar_horario' horario.pk %}" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

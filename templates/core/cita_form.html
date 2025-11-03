@@ -1,0 +1,28 @@
+{% extends 'core/panel.html' %}
+{% block content %}
+    <div class="card shadow-sm">
+      <div class="card-body">
+        {% if form.instance.pk %}
+            <h3 class="card-title">Editar Cita</h3>
+        {% else %}
+            <h3 class="card-title">Agendar Nueva Cita</h3>
+        {% endif %}
+        <hr>
+        <form method="post" class="mt-4">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger" role="alert">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary mt-3">Guardar</button>
+            <a href="{% url 'listar_citas' %}" class="btn btn-secondary mt-3">Volver a la Agenda</a>
+        </form>
+      </div>
+    </div>
+{% endblock %}

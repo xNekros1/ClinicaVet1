@@ -1,0 +1,59 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}ClínicaVet+{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+      body { display: flex; min-height: 100vh; flex-direction: column; }
+      .panel-main { flex: 1; display: flex; flex-direction: row; }
+      
+      .sidebar { 
+        min-width: 250px; 
+        max-width: 250px; 
+        padding-top: 1rem;
+        /* CAMBIO: Quitamos el 'background-color: #ffffff;' 
+          y usamos la variable de Bootstrap para que el fondo cambie.
+        */
+        background-color: var(--bs-body-bg);
+      }
+
+      .content { flex: 1; padding: 2rem; }
+      
+      .navbar-brand img {
+        height: 30px;
+        margin-right: 10px;
+      }
+      .sidebar-slogan {
+        padding: 15px;
+        text-align: center;
+        font-style: italic;
+        color: var(--bs-secondary-color); /* Esto se adapta al tema */
+        border-top: 1px solid var(--bs-border-color); /* Esto se adapta al tema */
+        margin-top: 20px;
+      }
+    </style>
+
+    <script>
+      (function() {
+        const storedTheme = localStorage.getItem('theme');
+        const preferredTheme = storedTheme ? storedTheme : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-bs-theme', preferredTheme);
+      })();
+    </script>
+  </head>
+  
+  <body> 
+
+    {% block body %}
+    {% endblock %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    
+    <script src="{% static 'js/theme.js' %}"></script>
+  </body>
+</html>
