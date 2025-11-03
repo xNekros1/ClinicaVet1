@@ -34,14 +34,19 @@ from core.views import (
 )
 
 urlpatterns = [
+    # --- Administración ---
     path('admin/', admin.site.urls),
-    
+
+    # --- Autenticación ---
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
-    path('panel/', panel_view, name='panel'), 
+    path('panel/', panel_view, name='panel'),
+
+    # --- Página principal (raíz del sitio) ---
+    path('', login_view, name='home'),
 
     # --- Rutas del CRUD de Citas ---
-    path('agenda/', listar_citas, name='listar_citas'), 
+    path('agenda/', listar_citas, name='listar_citas'),
     path('agenda/nueva/', crear_cita, name='crear_cita'),
     path('agenda/detalle/<int:pk>/', detalle_cita, name='detalle_cita'),
     path('agenda/editar/<int:pk>/', editar_cita, name='editar_cita'),
