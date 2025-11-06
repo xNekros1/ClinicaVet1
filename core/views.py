@@ -221,7 +221,7 @@ def editar_paciente(request, pk):
 def eliminar_paciente(request, pk):
     if request.user.rol not in ['ADMIN', 'RECEPCIONISTA']:
         return redirect('listar_pacientes')
-    paciente = get_object_or_4G4(Paciente, pk=pk)
+    paciente = get_object_or_404(Paciente, pk=pk)
     if request.method == 'POST':
         paciente.delete()
         return redirect('listar_pacientes')
