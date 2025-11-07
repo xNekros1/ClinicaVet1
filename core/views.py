@@ -43,7 +43,28 @@ def logout_view(request):
 
 @login_required(login_url='login')
 def panel_view(request):
-    return redirect('listar_citas')
+    # Solo mostrar dashboard con estadísticas si es ADMIN
+    if request.user.rol == 'ADMIN':
+        # Estadísticas para el dashboard
+        total_pacientes = Paciente.objects.count()
+        total_veterinarios = Veterinario.objects.count()
+        citas_pendientes = Cita.objects.filter(
+            estado__in=['SOLICITADA', 'AGENDADA']
+        ).count()
+        citas_hoy = Cita.objects.filter(
+            fecha_hora__date=timezone.localdate()
+        ).count()
+        
+        context = {
+            'total_pacientes': total_pacientes,
+            'total_veterinarios': total_veterinarios,
+            'citas_pendientes': citas_pendientes,
+            'citas_hoy': citas_hoy,
+        }
+        return render(request, 'core/panel.html', context)
+    else:
+        # Para otros roles, redirigir a agenda (comportamiento original)
+        return redirect('listar_citas')
 
 # --- CRUD CITAS ---
 
