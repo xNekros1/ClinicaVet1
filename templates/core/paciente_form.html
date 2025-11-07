@@ -1,19 +1,113 @@
 {% extends 'core/panel.html' %}
 {% block content %}
-    <div class="card shadow-sm">
-      <div class="card-body">
-        {% if form.instance.pk %}
+<div class="row justify-content-center">
+  <div class="col-lg-10">
+    <div class="card border-0 shadow rounded-3">
+      <div class="card-body p-4 p-md-5">
+        <div class="text-center mb-4">
+          {% if form.instance.pk %}
+            <i class="bi bi-heart-pulse display-5 text-primary mb-3"></i>
             <h3 class="card-title">Editar Paciente</h3>
-        {% else %}
+            <p class="text-muted">Actualiza la información de la mascota</p>
+          {% else %}
+            <i class="bi bi-plus-circle display-5 text-primary mb-3"></i>
             <h3 class="card-title">Registrar Nuevo Paciente</h3>
-        {% endif %}
-        <hr>
+            <p class="text-muted">Completa la información de la nueva mascota</p>
+          {% endif %}
+        </div>
+
         <form method="post" class="mt-4">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary mt-3">Guardar</button>
-            <a href="{% url 'listar_pacientes' %}" class="btn btn-secondary mt-3">Volver al Listado</a>
+          {% csrf_token %}
+          
+          <div class="row g-3">
+            <!-- Información Básica -->
+            <div class="col-md-6">
+              <label for="{{ form.nombre.id_for_label }}" class="form-label fw-semibold">
+                <i class="bi bi-tag me-1"></i> Nombre de la Mascota
+              </label>
+              {{ form.nombre }}
+            </div>
+            <div class="col-md-6">
+              <label for="{{ form.tutor.id_for_label }}" class="form-label fw-semibold">
+                <i class="bi bi-person me-1"></i> Tutor
+              </label>
+              {{ form.tutor }}
+            </div>
+            
+            <div class="col-md-4">
+              <label for="{{ form.especie.id_for_label }}" class="form-label fw-semibold">
+                <i class="bi bi-heart me-1"></i> Especie
+              </label>
+              {{ form.especie }}
+            </div>
+            <div class="col-md-4">
+              <label for="{{ form.raza.id_for_label }}" class="form-label fw-semibold">
+                Raza
+              </label>
+              {{ form.raza }}
+            </div>
+            <div class="col-md-4">
+              <label for="{{ form.sexo.id_for_label }}" class="form-label fw-semibold">
+                Sexo
+              </label>
+              {{ form.sexo }}
+            </div>
+            
+            <div class="col-md-6">
+              <label for="{{ form.fecha_nacimiento.id_for_label }}" class="form-label fw-semibold">
+                <i class="bi bi-calendar me-1"></i> Fecha de Nacimiento
+              </label>
+              {{ form.fecha_nacimiento }}
+            </div>
+            <div class="col-md-6">
+              <label for="{{ form.color.id_for_label }}" class="form-label fw-semibold">
+                Color
+              </label>
+              {{ form.color }}
+            </div>
+            
+            <div class="col-md-6">
+              <label for="{{ form.peso.id_for_label }}" class="form-label fw-semibold">
+                <i class="bi bi-speedometer2 me-1"></i> Peso (kg)
+              </label>
+              {{ form.peso }}
+            </div>
+            
+            <div class="col-12">
+              <label for="{{ form.observaciones.id_for_label }}" class="form-label fw-semibold">
+                <i class="bi bi-clipboard me-1"></i> Observaciones
+              </label>
+              {{ form.observaciones }}
+              <div class="form-text">Alergias, condiciones especiales, etc.</div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top">
+            <a href="{% url 'listar_pacientes' %}" class="btn btn-outline-secondary rounded-pill">
+              <i class="bi bi-arrow-left me-2"></i> Volver al Listado
+            </a>
+            <button type="submit" class="btn btn-primary rounded-pill px-4">
+              <i class="bi bi-check-lg me-2"></i> 
+              {% if form.instance.pk %}Actualizar{% else %}Registrar{% endif %} Paciente
+            </button>
+          </div>
         </form>
       </div>
     </div>
+  </div>
+</div>
+
+<style>
+.form-control, .form-select {
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e9ecef;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.1);
+}
+</style>
 {% endblock %}

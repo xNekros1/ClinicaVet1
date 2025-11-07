@@ -1,48 +1,105 @@
 {% extends "core/base.html" %}
-{% load static %} {% block title %}Ingreso - ClínicaVet+{% endblock %}
+{% load static %} 
+{% block title %}Ingreso - ClínicaVet+{% endblock %}
 
 {% block body %}
-<div class="container">
-  <div class="row justify-content-center align-items-center" style="height: 100vh;">
-    <div class="col-md-5">
-      <div class="card shadow-lg">
-        <div class="position-absolute top-0 end-0 p-3">
-          <button class="btn btn-outline-secondary" id="theme-toggle" type="button">
-            <i class="bi bi-sun-fill" id="theme-icon-light"></i>
-            <i class="bi bi-moon-fill" id="theme-icon-dark"></i>
-          </button>
+<div class="container-fluid login-bg">
+  <div class="row min-vh-100">
+    <!-- Lado izquierdo -->
+    <div class="col-lg-6 d-none d-lg-flex align-items-center justify-content-center text-white p-5">
+      <div class="text-center">
+        <img src="{% static 'img/logo.jpg' %}" alt="Logo" class="img-fluid mb-4 rounded-circle" style="max-height: 120px;">
+        <h1 class="display-5 fw-bold mb-3">Clínica Veterinaria+</h1>
+        <p class="lead fs-4">"Cuidamos de ellos como familia"</p>
+        <div class="mt-5">
+          <div class="row text-center">
+            <div class="col-4">
+              <i class="bi bi-heart-pulse fs-1 d-block mb-2"></i>
+              <small>Cuidado Expertos</small>
+            </div>
+            <div class="col-4">
+              <i class="bi bi-calendar-check fs-1 d-block mb-2"></i>
+              <small>Agenda Digital</small>
+            </div>
+            <div class="col-4">
+              <i class="bi bi-shield-check fs-1 d-block mb-2"></i>
+              <small>Seguro y Confiable</small>
+            </div>
+          </div>
         </div>
-        
-        <div class="card-body p-5">
-          <h1 class="text-center h3 mb-4">
-            <img src="{% static 'img/logo.jpg' %}" alt="Logo" style="height: 40px; margin-right: 10px;">
-            Sistema de Agenda
-          </h1>
-          
-          <form method="POST" action="{% url 'login' %}">
-            {% csrf_token %} 
-            
-            <div class="mb-3">
-              <label for="email" class="form-label">Email</label>
-              <input type="email" class="form-control" id="email" name="email" placeholder="admin@correo.com" required>
-            </div>
-            
-            <div class="mb-3">
-              <label for="password" class="form-label">Contraseña</label>
-              <input type="password" class="form-control" id="password" name="password" placeholder="******" required>
-            </div>
-            
-            {% if error %}
-              <div class="alert alert-danger" role="alert">
-                {{ error }}
-              </div>
-            {% endif %}
-            
-            <div class="d-grid">
-              <button type="submit" class="btn btn-primary btn-lg">Ingresar</button>
-            </div>
-          </form>
+      </div>
+    </div>
 
+    <!-- Lado derecho -->
+    <div class="col-lg-6 d-flex align-items-center justify-content-center bg-light">
+      <div class="w-100" style="max-width: 400px;">
+        <div class="card shadow border-0 rounded-3 card-glass">
+          <div class="card-body p-4 p-md-5">
+            
+            <!-- Header móvil -->
+            <div class="text-center mb-4 d-lg-none">
+              <img src="{% static 'img/logo.jpg' %}" alt="Logo" class="mb-3 rounded-circle" style="height: 60px;">
+              <h4 class="text-primary">ClínicaVet+</h4>
+            </div>
+
+            <!-- Toggle tema -->
+            <div class="text-end mb-3">
+              <button class="btn btn-outline-primary btn-sm rounded-pill" id="theme-toggle" type="button">
+                <i class="bi bi-sun-fill" id="theme-icon-light"></i>
+                <i class="bi bi-moon-fill d-none" id="theme-icon-dark"></i>
+                <span class="ms-1">Tema</span>
+              </button>
+            </div>
+
+            <h3 class="text-center mb-4 text-primary">Bienvenido</h3>
+            <p class="text-center text-muted mb-4">Ingresa a tu cuenta para continuar</p>
+            
+            <form method="POST" action="{% url 'login' %}">
+              {% csrf_token %}
+              
+              <div class="mb-3">
+                <label for="email" class="form-label fw-semibold">Correo Electrónico</label>
+                <div class="input-group input-group-lg">
+                  <span class="input-group-text bg-light border-end-0">
+                    <i class="bi bi-envelope text-muted"></i>
+                  </span>
+                  <input type="email" class="form-control border-start-0 ps-0" id="email" name="email" 
+                         placeholder="admin@clinica.com" required>
+                </div>
+              </div>
+              
+              <div class="mb-4">
+                <label for="password" class="form-label fw-semibold">Contraseña</label>
+                <div class="input-group input-group-lg">
+                  <span class="input-group-text bg-light border-end-0">
+                    <i class="bi bi-lock text-muted"></i>
+                  </span>
+                  <input type="password" class="form-control border-start-0 ps-0" id="password" name="password" 
+                         placeholder="••••••••" required>
+                </div>
+              </div>
+              
+              {% if error %}
+                <div class="alert alert-danger d-flex align-items-center rounded-3" role="alert">
+                  <i class="bi bi-exclamation-triangle me-2"></i>
+                  <div class="small">{{ error }}</div>
+                </div>
+              {% endif %}
+              
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary btn-lg rounded-pill py-3 fw-semibold">
+                  <i class="bi bi-box-arrow-in-right me-2"></i>Ingresar al Sistema
+                </button>
+              </div>
+            </form>
+
+            <div class="text-center mt-4 pt-3 border-top">
+              <small class="text-muted">
+                &copy; 2024 ClínicaVet+. Todos los derechos reservados.
+              </small>
+            </div>
+
+          </div>
         </div>
       </div>
     </div>

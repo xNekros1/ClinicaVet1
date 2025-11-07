@@ -1,26 +1,45 @@
 {% extends "core/base.html" %}
-{% load static %} {% block title %}Panel - ClínicaVet+{% endblock %}
+{% load static %} 
+{% block title %}Panel - ClínicaVet+{% endblock %}
 
 {% block body %}
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
   <div class="container-fluid">
-    <a class="navbar-brand d-flex align-items-center" href="{% url 'panel' %}">
-      <img src="{% static 'img/logo.jpg' %}" alt="ClínicaVet Logo">
+    <a class="navbar-brand d-flex align-items-center fw-bold" href="{% url 'panel' %}">
+      <img src="{% static 'img/logo.jpg' %}" alt="ClínicaVet Logo" class="me-2" style="height: 35px;">
       ClínicaVet+
     </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+    
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarCollapse">
       <span class="navbar-toggler-icon"></span>
     </button>
+
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
-            <i class="bi bi-person-circle"></i> {{ user.nombre }} ({{ user.get_rol_display }})
+          <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+            <i class="bi bi-person-circle me-2 fs-5"></i> 
+            <div>
+              <div class="fw-semibold">{{ user.nombre }}</div>
+              <small class="opacity-75">{{ user.get_rol_display }}</small>
+            </div>
           </a>
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li><button class="dropdown-item d-flex align-items-center" id="theme-toggle" type="button">...</button></li>
+          <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3">
+            <li>
+              <button class="dropdown-item d-flex align-items-center" id="theme-toggle" type="button">
+                <i class="bi bi-sun-fill me-2" id="theme-icon-light"></i>
+                <i class="bi bi-moon-fill me-2 d-none" id="theme-icon-dark"></i>
+                Cambiar Tema
+              </button>
+            </li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="{% url 'logout' %}">Cerrar Sesión</a></li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center text-danger" href="{% url 'logout' %}">
+                <i class="bi bi-box-arrow-right me-2"></i>
+                Cerrar Sesión
+              </a>
+            </li>
           </ul>
         </li>
       </ul>
@@ -28,49 +47,84 @@
   </div>
 </nav>
 
-<div class="panel-main">
-  <aside class="sidebar border-end">
-    <div class="nav flex-column nav-pills" role="tablist" aria-orientation="vertical">
-      
-      {% if user.rol == "ADMIN" or user.rol == "RECEPCIONISTA" or user.rol == "VETERINARIO" %}
-        <a href="{% url 'listar_citas' %}" 
-           class="nav-link {% if 'cita' in request.resolver_match.url_name %}active{% endif %}">
-           <i class="bi bi-calendar-week me-2"></i> Agenda
-        </a>
-      {% endif %}
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <nav id="sidebarCollapse" class="col-lg-2 col-md-3 sidebar collapse d-lg-block p-0">
+      <div class="position-sticky pt-3">
+        <div class="nav flex-column gap-2 p-3">
+          
+          {% if user.rol == "ADMIN" or user.rol == "RECEPCIONISTA" or user.rol == "VETERINARIO" %}
+            <a href="{% url 'listar_citas' %}" 
+               class="nav-link nav-link-custom d-flex align-items-center {% if 'cita' in request.resolver_match.url_name %}active{% endif %}">
+               <i class="bi bi-calendar-week me-3 fs-6"></i> 
+               <span>Agenda</span>
+            </a>
+          {% endif %}
 
-      {% if user.rol == "ADMIN" or user.rol == "VETERINARIO" or user.rol == "RECEPCIONISTA" %}
-        <a href="{% url 'listar_pacientes' %}" 
-           class="nav-link {% if 'paciente' in request.resolver_match.url_name %}active{% endif %}">
-           <i class="bi bi-heart-pulse me-2"></i> Pacientes
-        </a>
-      {% endif %}
+          {% if user.rol == "ADMIN" or user.rol == "VETERINARIO" or user.rol == "RECEPCIONISTA" %}
+            <a href="{% url 'listar_pacientes' %}" 
+               class="nav-link nav-link-custom d-flex align-items-center {% if 'paciente' in request.resolver_match.url_name %}active{% endif %}">
+               <i class="bi bi-heart-pulse me-3 fs-6"></i> 
+               <span>Pacientes</span>
+            </a>
+          {% endif %}
 
-      {% if user.rol == "ADMIN" or user.rol == "RECEPCIONISTA" %}
-        <a href="{% url 'listar_tutores' %}" 
-           class="nav-link {% if 'tutor' in request.resolver_match.url_name %}active{% endif %}">
-           <i class="bi bi-people me-2"></i> Tutores
-        </a>
-      {% endif %}
+          {% if user.rol == "ADMIN" or user.rol == "RECEPCIONISTA" %}
+            <a href="{% url 'listar_tutores' %}" 
+               class="nav-link nav-link-custom d-flex align-items-center {% if 'tutor' in request.resolver_match.url_name %}active{% endif %}">
+               <i class="bi bi-people me-3 fs-6"></i> 
+               <span>Tutores</span>
+            </a>
+          {% endif %}
 
-      {% if user.rol == "ADMIN" %}
-        <a href="{% url 'listar_horarios_vet' %}" 
-           class="nav-link {% if 'horario' in request.resolver_match.url_name %}active{% endif %}">
-           <i class="bi bi-clock-history me-2"></i> Gestionar Horarios
-        </a>
-        <a href="#" class="nav-link"><i class="bi bi-person-vcard me-2"></i> Gestionar Personal</a>
-        <a href="#" class="nav-link"><i class="bi bi-clipboard-data me-2"></i> Reportes</a>
-      {% endif %}
-    </div>
-    
-    <div class="sidebar-slogan mt-auto">
-      "Cuidamos de ellos como familia"
-    </div>
-  </aside>
+          {% if user.rol == "ADMIN" %}
+            <a href="{% url 'listar_horarios_vet' %}" 
+               class="nav-link nav-link-custom d-flex align-items-center {% if 'horario' in request.resolver_match.url_name %}active{% endif %}">
+               <i class="bi bi-clock-history me-3 fs-6"></i> 
+               <span>Horarios</span>
+            </a>
+            <a href="#" class="nav-link nav-link-custom d-flex align-items-center">
+              <i class="bi bi-person-vcard me-3 fs-6"></i> 
+              <span>Personal</span>
+            </a>
+            <a href="#" class="nav-link nav-link-custom d-flex align-items-center">
+              <i class="bi bi-clipboard-data me-3 fs-6"></i> 
+              <span>Reportes</span>
+            </a>
+          {% endif %}
+        </div>
+        
+        <!-- Slogan -->
+        <div class="p-3 mt-5 border-top border-white border-opacity-25">
+          <small class="text-white opacity-75 fst-italic">
+            <i class="bi bi-heart me-1"></i> "Cuidamos de ellos como familia"
+          </small>
+        </div>
+      </div>
+    </nav>
 
-  <main class="content">
-    {% block content %}
-    {% endblock %}
-  </main>
+    <!-- Contenido principal -->
+    <main class="col-lg-10 col-md-9 ms-sm-auto p-4">
+      {% block content %}
+      <!-- Aquí va el contenido específico de cada página -->
+      {% endblock %}
+    </main>
+  </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Cerrar sidebar en móvil al hacer clic en un enlace
+  const sidebarLinks = document.querySelectorAll('#sidebarCollapse .nav-link');
+  sidebarLinks.forEach(link => {
+    link.addEventListener('click', function() {
+      if (window.innerWidth < 992) {
+        const collapse = new bootstrap.Collapse(document.getElementById('sidebarCollapse'));
+        collapse.hide();
+      }
+    });
+  });
+});
+</script>
 {% endblock %}

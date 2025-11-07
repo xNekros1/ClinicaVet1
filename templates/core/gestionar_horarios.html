@@ -1,65 +1,116 @@
 {% extends 'core/panel.html' %}
 {% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h3 class="mb-1">Gestión de Horarios</h3>
+    <p class="text-muted mb-0">Para {{ veterinario }}</p>
+  </div>
+  <a href="{% url 'listar_horarios_vet' %}" class="btn btn-outline-secondary rounded-pill">
+    <i class="bi bi-arrow-left me-2"></i> Volver a la lista
+  </a>
+</div>
 
-    <a href="{% url 'listar_horarios_vet' %}" class="btn btn-secondary mb-3"><i class="bi bi-arrow-left"></i> Volver a la lista</a>
-
-    <div class="row">
-        <div class="col-md-5">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h4 class="card-title">Añadir Bloque Horario</h4>
-                    <p class="text-muted">Para {{ veterinario }}</p>
-                    <hr>
-                    <form method="POST">
-                        {% csrf_token %}
-                        {% if form.non_field_errors %}
-                            <div class="alert alert-danger" role="alert">
-                                {% for error in form.non_field_errors %}
-                                    {{ error }}
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                        {{ form.as_p }}
-                        <button type="submit" class="btn btn-primary mt-3">Añadir Bloque</button>
-                    </form>
-                </div>
-            </div>
+<div class="row">
+  <!-- Formulario para añadir horario -->
+  <div class="col-md-5">
+    <div class="card border-0 shadow rounded-3 h-100">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-3">
+          <i class="bi bi-plus-circle text-primary me-2 fs-4"></i>
+          <h5 class="card-title mb-0">Añadir Bloque Horario</h5>
         </div>
-
-        <div class="col-md-7">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h4 class="card-title">Horarios Activos</h4>
-                    <p class="text-muted">De {{ veterinario }}</p>
-                    <hr>
-                    {% if not horarios %}
-                        <p class="text-center">Este veterinario aún no tiene bloques de horario definidos.</p>
-                    {% else %}
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Día</th>
-                                    <th>Inicio</th>
-                                    <th>Fin</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for horario in horarios %}
-                                <tr>
-                                    <td>{{ horario.get_dia_semana_display }}</td>
-                                    <td>{{ horario.hora_inicio|time:"H:i" }}</td>
-                                    <td>{{ horario.hora_fin|time:"H:i" }}</td>
-                                    <td>
-                                        <a href="{% url 'eliminar_horario' horario.pk %}" class="btn btn-sm btn-outline-danger">Eliminar</a>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    {% endif %}
-                </div>
+        <p class="text-muted">Configura un nuevo bloque de horario laboral</p>
+        <hr>
+        
+        <form method="POST">
+          {% csrf_token %}
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger rounded-3" role="alert">
+              <i class="bi bi-exclamation-triangle me-2"></i>
+              {% for error in form.non_field_errors %}
+                {{ error }}
+              {% endfor %}
             </div>
-        </div>
+          {% endif %}
+          
+          <div class="row g-3">
+            <div class="col-12">
+              <label for="{{ form.dia_semana.id_for_label }}" class="form-label fw-semibold">
+                <i class="bi bi-calendar-week me-1"></i> Día de la semana
+              </label>
+              {{ form.dia_semana }}
+            </div>
+            <div class="col-md-6">
+              <label for="{{ form.hora_inicio.id_for_label }}" class="form-label fw-semibold">
+                <i class="bi bi-clock me-1"></i> Hora de Inicio
+              </label>
+              {{ form.hora_inicio }}
+            </div>
+            <div class="col-md-6">
+              <label for="{{ form.hora_fin.id_for_label }}" class="form-label fw-semibold">
+                Hora de Fin
+              </label>
+              {{ form.hora_fin }}
+            </div>
+          </div>
+          
+          <button type="submit" class="btn btn-primary rounded-pill w-100 mt-4 py-2">
+            <i class="bi bi-plus-circle me-2"></i> Añadir Bloque
+          </button>
+        </form>
+      </div>
     </div>
+  </div>
+
+  <!-- Lista de horarios activos -->
+  <div class="col-md-7">
+    <div class="card border-0 shadow rounded-3 h-100">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-3">
+          <i class="bi bi-clock-history text-primary me-2 fs-4"></i>
+          <h5 class="card-title mb-0">Horarios Activos</h5>
+        </div>
+        <p class="text-muted">Bloques de horario configurados</p>
+        <hr>
+        
+        {% if not horarios %}
+          <div class="text-center py-5">
+            <i class="bi bi-clock display-4 text-muted d-block mb-3"></i>
+            <h5 class="text-muted">No hay horarios definidos</h5>
+            <p class="text-muted">Agrega el primer bloque de horario</p>
+          </div>
+        {% else %}
+          <div class="list-group list-group-flush">
+            {% for horario in horarios %}
+            <div class="list-group-item d-flex justify-content-between align-items-center border-0 py-3 px-0">
+              <div>
+                <h6 class="mb-1">
+                  <span class="badge bg-primary rounded-pill me-2">{{ horario.get_dia_semana_display }}</span>
+                  {{ horario.hora_inicio|time:"H:i" }} - {{ horario.hora_fin|time:"H:i" }}
+                </h6>
+              </div>
+              <a href="{% url 'eliminar_horario' horario.pk %}" class="btn btn-outline-danger btn-sm rounded-pill">
+                <i class="bi bi-trash"></i> Eliminar
+              </a>
+            </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.form-control, .form-select {
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e9ecef;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.1);
+}
+</style>
 {% endblock %}

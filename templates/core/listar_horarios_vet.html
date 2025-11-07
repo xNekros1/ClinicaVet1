@@ -1,22 +1,61 @@
 {% extends 'core/panel.html' %}
 {% block content %}
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <h3 class="card-title">Gestionar Horarios</h3>
-        <p class="card-subtitle mb-2 text-muted">Seleccione un veterinario para ver, añadir o eliminar sus bloques de horario laboral.</p>
-        <hr>
-
-        <div class="list-group">
-            {% for vet in veterinarios %}
-                <a href="{% url 'gestionar_horarios' vet.pk %}" class="list-group-item list-group-item-action">
-                    {{ vet }}
-                    <span class="text-muted small d-block">{{ vet.especialidad|default:"Generalista" }}</span>
-                </a>
-            {% empty %}
-                <p class="text-center">No hay veterinarios registrados en el sistema.</p>
-                <p class="text-center"><small>Debe crear un usuario con rol 'Veterinario' y luego un perfil de 'Veterinario' en el <a href="/admin/">panel de administración</a>.</small></p>
-            {% endfor %}
-        </div>
-      </div>
+<div class="card border-0 shadow rounded-3">
+  <div class="card-body">
+    <div class="text-center mb-5">
+      <i class="bi bi-clock-history display-4 text-primary mb-3"></i>
+      <h3 class="card-title">Gestionar Horarios</h3>
+      <p class="card-subtitle text-muted">Seleccione un veterinario para gestionar sus horarios laborales</p>
     </div>
+
+    <div class="row g-4">
+      {% for vet in veterinarios %}
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100 border-0 shadow-sm hover-shadow transition-all">
+            <div class="card-body text-center p-4">
+              <div class="avatar-circle bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
+                <i class="bi bi-person-badge fs-4"></i>
+              </div>
+              <h5 class="card-title mb-2">{{ vet }}</h5>
+              <p class="card-text text-muted small mb-3">
+                {{ vet.especialidad|default:"Generalista" }}
+              </p>
+              <div class="d-grid">
+                <a href="{% url 'gestionar_horarios' vet.pk %}" class="btn btn-primary rounded-pill">
+                  <i class="bi bi-clock me-2"></i> Gestionar Horarios
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <div class="col-12">
+          <div class="text-center py-5">
+            <i class="bi bi-person-x display-4 text-muted d-block mb-3"></i>
+            <h5 class="text-muted">No hay veterinarios registrados</h5>
+            <p class="text-muted mb-4">
+              Debe crear un usuario con rol 'Veterinario' y luego un perfil en el panel de administración.
+            </p>
+            <a href="/admin/" class="btn btn-outline-primary rounded-pill">
+              <i class="bi bi-gear me-2"></i> Ir al Panel de Administración
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<style>
+.hover-shadow {
+  transition: all 0.3s ease;
+}
+.hover-shadow:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+.avatar-circle {
+  font-size: 1.25rem;
+}
+</style>
 {% endblock %}

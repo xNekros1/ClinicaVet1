@@ -1,44 +1,52 @@
 // static/js/theme.js
-
-(() => {
-    'use strict';
-
-    // Función para obtener el tema guardado en localStorage
-    const getStoredTheme = () => localStorage.getItem('theme');
+document.addEventListener('DOMContentLoaded', function() {
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIconLight = document.getElementById('theme-icon-light');
+    const themeIconDark = document.getElementById('theme-icon-dark');
     
-    // Función para guardar el tema en localStorage
-    const setStoredTheme = theme => localStorage.setItem('theme', theme);
-
-    // Función para obtener el tema preferido (guardado o del sistema)
-    const getPreferredTheme = () => {
-        const storedTheme = getStoredTheme();
-        if (storedTheme) {
-            return storedTheme;
+    function updateThemeIcons(theme) {
+        if (theme === 'dark') {
+            if (themeIconLight) themeIconLight.classList.add('d-none');
+            if (themeIconDark) themeIconDark.classList.remove('d-none');
+        } else {
+            if (themeIconLight) themeIconLight.classList.remove('d-none');
+            if (themeIconDark) themeIconDark.classList.add('d-none');
         }
-        // Si no hay nada guardado, usa la preferencia del sistema (modo oscuro)
-        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    };
-
-    // Función para aplicar el tema al HTML
-    const setTheme = theme => {
-        document.documentElement.setAttribute('data-bs-theme', theme);
-    };
-
-    // Aplicamos el tema preferido al cargar la página
-    setTheme(getPreferredTheme());
-
-    // --- Lógica del Botón de Toggle ---
+    }
     
-    // Espera a que el DOM esté cargado para encontrar los botones
-    window.addEventListener('DOMContentLoaded', () => {
-        // Busca todos los botones de toggle (podemos tener uno en el panel y otro en el login)
-        document.querySelectorAll('#theme-toggle').forEach(toggle => {
-            toggle.addEventListener('click', () => {
-                const currentTheme = getStoredTheme() || getPreferredTheme();
-                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-                setStoredTheme(newTheme);
-                setTheme(newTheme);
-            });
+    function setTheme(theme) {
+        document.documentElement.setAttribute('data-bs-theme', theme);
+        localStorage.setItem('theme', theme);
+        updateThemeIcons(theme);
+    }
+    
+    function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+    }
+    
+    // Initialize theme
+    const storedTheme = localStorage.getItem('theme');
+    if (storedTheme) {
+        setTheme(storedTheme);
+    } else {
+        // Default to light theme
+        setTheme('light');
+    }
+    
+    if (themeToggle) {
+        themeToggle.addEventListener('click', toggleTheme);
+    }
+    
+    // Cerrar sidebar en móvil
+    const sidebarLinks = document.querySelectorAll('#sidebarCollapse .nav-link');
+    sidebarLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            if (window.innerWidth < 992) {
+                const collapse = new bootstrap.Collapse(document.getElementById('sidebarCollapse'));
+                collapse.hide();
+            }
         });
     });
-})();
+});

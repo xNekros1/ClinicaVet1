@@ -1,40 +1,96 @@
 {% extends 'core/panel.html' %}
 {% block content %}
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3>Gestión de Tutores</h3>
-      <a href="{% url 'crear_tutor' %}" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Registrar Nuevo Tutor</a>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h3 class="mb-1">Gestión de Tutores</h3>
+    <p class="text-muted mb-0">Administra los tutores de las mascotas</p>
+  </div>
+  <a href="{% url 'crear_tutor' %}" class="btn btn-primary btn-lg rounded-pill">
+    <i class="bi bi-person-plus me-2"></i> Registrar Nuevo Tutor
+  </a>
+</div>
+
+<div class="card border-0 shadow rounded-3">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th class="ps-4">Tutor</th>
+            <th>RUT</th>
+            <th>Contacto</th>
+            <th>Email</th>
+            <th class="text-end pe-4">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for tutor in tutores %}
+          <tr>
+            <td class="ps-4">
+              <div class="d-flex align-items-center">
+                <div class="avatar-circle bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                  <i class="bi bi-person-fill"></i>
+                </div>
+                <div>
+                  <strong>{{ tutor.nombre }} {{ tutor.apellido }}</strong>
+                  {% if tutor.direccion %}
+                    <br>
+                    <small class="text-muted">{{ tutor.direccion|truncatewords:3 }}</small>
+                  {% endif %}
+                </div>
+              </div>
+            </td>
+            <td>
+              <code class="text-dark">{{ tutor.rut }}</code>
+            </td>
+            <td>
+              <div class="d-flex align-items-center">
+                <i class="bi bi-telephone text-success me-2"></i>
+                {{ tutor.telefono }}
+              </div>
+            </td>
+            <td>
+              {% if tutor.email %}
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-envelope text-primary me-2"></i>
+                  <span class="text-truncate" style="max-width: 150px;">{{ tutor.email }}</span>
+                </div>
+              {% else %}
+                <span class="text-muted fst-italic">No especificado</span>
+              {% endif %}
+            </td>
+            <td class="text-end pe-4">
+              <div class="btn-group" role="group">
+                <a href="{% url 'editar_tutor' tutor.id %}" class="btn btn-outline-primary btn-sm rounded-pill me-1">
+                  <i class="bi bi-pencil"></i> Editar
+                </a>
+                <a href="{% url 'eliminar_tutor' tutor.id %}" class="btn btn-outline-danger btn-sm rounded-pill">
+                  <i class="bi bi-trash"></i> Eliminar
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="text-center py-5">
+              <i class="bi bi-people display-4 text-muted d-block mb-3"></i>
+              <h5 class="text-muted">No hay tutores registrados</h5>
+              <p class="text-muted">Comienza registrando el primer tutor</p>
+              <a href="{% url 'crear_tutor' %}" class="btn btn-primary rounded-pill mt-2">
+                <i class="bi bi-person-plus me-2"></i> Registrar Tutor
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <table class="table table-striped table-hover">
-            <thead class="table-light">
-                <tr>
-                    <th>Nombre Completo</th>
-                    <th>RUT</th>
-                    <th>Teléfono</th>
-                    <th>Email</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for tutor in tutores %}
-                <tr>
-                    <td>{{ tutor.nombre }} {{ tutor.apellido }}</td>
-                    <td>{{ tutor.rut }}</td>
-                    <td>{{ tutor.telefono }}</td>
-                    <td>{{ tutor.email|default:"-" }}</td>
-                    <td>
-                        <a href="{% url 'editar_tutor' tutor.id %}" class="btn btn-sm btn-outline-primary">Editar</a>
-                        <a href="{% url 'eliminar_tutor' tutor.id %}" class="btn btn-sm btn-outline-danger">Eliminar</a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5" class="text-center">No hay tutores registrados.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-      </div>
-    </div>
+  </div>
+</div>
+
+<style>
+.avatar-circle {
+  font-size: 1rem;
+}
+</style>
 {% endblock %}
