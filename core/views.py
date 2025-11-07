@@ -55,11 +55,20 @@ def panel_view(request):
             fecha_hora__date=timezone.localdate()
         ).count()
         
+        # PRÓXIMAS CITAS (NUEVO)
+        hoy = timezone.localdate()
+        ahora = timezone.now()
+        proximas_citas = Cita.objects.filter(
+            fecha_hora__date=hoy,
+            fecha_hora__gte=ahora
+        ).order_by('fecha_hora')[:5]  # Solo las próximas 5 citas
+        
         context = {
             'total_pacientes': total_pacientes,
             'total_veterinarios': total_veterinarios,
             'citas_pendientes': citas_pendientes,
             'citas_hoy': citas_hoy,
+            'proximas_citas': proximas_citas,  # NUEVO
         }
         return render(request, 'core/panel.html', context)
     else:

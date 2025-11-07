@@ -113,9 +113,7 @@
             <div class="card-body">
               <div class="d-flex align-items-center">
                 <div class="flex-grow-1">
-                  <h3 class="card-title fw-bold">
-                    {% now "d" %}
-                  </h3>
+                  <h3 class="card-title fw-bold">{{ citas_hoy }}</h3>
                   <p class="card-text mb-0">Citas Hoy</p>
                 </div>
                 <div class="flex-shrink-0">
@@ -130,9 +128,7 @@
             <div class="card-body">
               <div class="d-flex align-items-center">
                 <div class="flex-grow-1">
-                  <h3 class="card-title fw-bold">
-                    {{ total_pacientes }}
-                  </h3>
+                  <h3 class="card-title fw-bold">{{ total_pacientes }}</h3>
                   <p class="card-text mb-0">Pacientes</p>
                 </div>
                 <div class="flex-shrink-0">
@@ -147,9 +143,7 @@
             <div class="card-body">
               <div class="d-flex align-items-center">
                 <div class="flex-grow-1">
-                  <h3 class="card-title fw-bold">
-                    {{ citas_pendientes }}
-                  </h3>
+                  <h3 class="card-title fw-bold">{{ citas_pendientes }}</h3>
                   <p class="card-text mb-0">Pendientes</p>
                 </div>
                 <div class="flex-shrink-0">
@@ -164,14 +158,88 @@
             <div class="card-body">
               <div class="d-flex align-items-center">
                 <div class="flex-grow-1">
-                  <h3 class="card-title fw-bold">
-                    {{ total_veterinarios }}
-                  </h3>
+                  <h3 class="card-title fw-bold">{{ total_veterinarios }}</h3>
                   <p class="card-text mb-0">Veterinarios</p>
                 </div>
                 <div class="flex-shrink-0">
                   <i class="bi bi-person-badge fs-1 opacity-75"></i>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN: PRÓXIMAS CITAS + ACCIONES RÁPIDAS -->
+      <div class="row mt-4">
+        <!-- Próximas Citas -->
+        <div class="col-lg-8 mb-4">
+          <div class="card border-0 shadow rounded-3 h-100">
+            <div class="card-header bg-white border-0 py-3">
+              <h5 class="card-title mb-0">
+                <i class="bi bi-clock-history me-2 text-primary"></i>
+                Próximas Citas de Hoy
+              </h5>
+            </div>
+            <div class="card-body">
+              {% if proximas_citas %}
+                <div class="list-group list-group-flush">
+                  {% for cita in proximas_citas %}
+                  <div class="list-group-item d-flex justify-content-between align-items-center border-0 py-3 px-0">
+                    <div class="flex-grow-1">
+                      <div class="d-flex align-items-center mb-1">
+                        <i class="bi bi-heart-pulse text-primary me-2"></i>
+                        <strong class="me-2">{{ cita.paciente.nombre }}</strong>
+                        <small class="text-muted">({{ cita.paciente.tutor }})</small>
+                      </div>
+                      <div class="d-flex">
+                        <small class="text-muted me-3">
+                          <i class="bi bi-person-badge me-1"></i>{{ cita.veterinario }}
+                        </small>
+                        <small class="text-muted">
+                          <i class="bi bi-clock me-1"></i>{{ cita.fecha_hora|time:"H:i" }}
+                        </small>
+                      </div>
+                    </div>
+                    <span class="badge {% if cita.estado == 'AGENDADA' %}bg-info{% else %}bg-warning text-dark{% endif %} rounded-pill">
+                      {{ cita.get_estado_display }}
+                    </span>
+                  </div>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <div class="text-center py-4">
+                  <i class="bi bi-calendar-x display-4 text-muted d-block mb-3"></i>
+                  <p class="text-muted mb-0">No hay citas próximas para hoy</p>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Acciones Rápidas -->
+        <div class="col-lg-4 mb-4">
+          <div class="card border-0 shadow rounded-3 h-100">
+            <div class="card-header bg-white border-0 py-3">
+              <h5 class="card-title mb-0">
+                <i class="bi bi-lightning me-2 text-warning"></i>
+                Acciones Rápidas
+              </h5>
+            </div>
+            <div class="card-body">
+              <div class="d-grid gap-3">
+                <a href="{% url 'crear_cita' %}" class="btn btn-primary rounded-pill py-3">
+                  <i class="bi bi-plus-circle me-2"></i>Agendar Cita
+                </a>
+                <a href="{% url 'crear_paciente' %}" class="btn btn-success rounded-pill py-3">
+                  <i class="bi bi-heart-pulse me-2"></i>Nuevo Paciente
+                </a>
+                <a href="{% url 'crear_tutor' %}" class="btn btn-info rounded-pill py-3">
+                  <i class="bi bi-person-plus me-2"></i>Nuevo Tutor
+                </a>
+                <a href="{% url 'listar_horarios_vet' %}" class="btn btn-outline-primary rounded-pill py-2">
+                  <i class="bi bi-clock me-2"></i>Gestionar Horarios
+                </a>
               </div>
             </div>
           </div>
