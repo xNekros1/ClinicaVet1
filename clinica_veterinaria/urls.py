@@ -31,6 +31,10 @@ from core.views import (
     listar_horarios_vet,
     gestionar_horarios,
     eliminar_horario,
+
+    # NUEVAS VISTAS DE PERSONAL
+    gestionar_personal,
+    eliminar_personal,
 )
 
 urlpatterns = [
@@ -69,4 +73,8 @@ urlpatterns = [
     path('horarios/', listar_horarios_vet, name='listar_horarios_vet'),
     path('horarios/gestionar/<str:vet_id>/', gestionar_horarios, name='gestionar_horarios'),
     path('horarios/eliminar/<int:pk>/', eliminar_horario, name='eliminar_horario'),
+    
+    # --- Rutas de Gestión de Personal ---
+    path('personal/', gestionar_personal, name='gestionar_personal'),
+    path('personal/eliminar/<int:pk>/', eliminar_personal, name='eliminar_personal'),
 ]

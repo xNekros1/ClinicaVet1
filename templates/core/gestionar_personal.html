@@ -1,0 +1,235 @@
+{% extends 'core/panel.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h3 class="mb-1">Gestión de Personal</h3>
+    <p class="text-muted mb-0">Administra los usuarios del sistema</p>
+  </div>
+</div>
+
+<div class="row">
+  <!-- Formulario -->
+  <div class="col-md-5">
+    <div class="card border-0 shadow rounded-3 h-100">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-3">
+          <i class="bi bi-{% if editing_user_id %}person-gear{% else %}person-plus{% endif %} text-primary me-2 fs-4"></i>
+          <h5 class="card-title mb-0">
+            {% if editing_user_id %}Editar Usuario{% else %}Agregar Personal{% endif %}
+          </h5>
+        </div>
+        
+        <form method="post">
+          {% csrf_token %}
+          {% if editing_user_id %}
+            <input type="hidden" name="user_id" value="{{ editing_user_id }}">
+            {% if vet_data %}
+              <input type="hidden" name="vet_id" value="{{ vet_data.pk }}">
+            {% endif %}
+          {% endif %}
+          
+          <div class="row g-3">
+            <!-- Información Básica -->
+            <div class="col-12">
+              <label for="{{ form.email.id_for_label }}" class="form-label fw-semibold">
+                <i class="bi bi-envelope me-1"></i> Email
+              </label>
+              {{ form.email }}
+            </div>
+            
+            <div class="col-md-6">
+              <label for="{{ form.nombre.id_for_label }}" class="form-label fw-semibold">
+                <i class="bi bi-person me-1"></i> Nombre
+              </label>
+              {{ form.nombre }}
+            </div>
+            <div class="col-md-6">
+              <label for="{{ form.apellido.id_for_label }}" class="form-label fw-semibold">
+                Apellido
+              </label>
+              {{ form.apellido }}
+            </div>
+            
+            <div class="col-12">
+              <label for="{{ form.rol.id_for_label }}" class="form-label fw-semibold">
+                <i class="bi bi-person-badge me-1"></i> Rol
+              </label>
+              {{ form.rol }}
+            </div>
+            
+            <!-- Campos de Veterinario (solo si rol es VETERINARIO) -->
+            <div id="veterinario-fields" class="col-12" style="display: none;">
+              <div class="card bg-light border-0 rounded-3 mt-2">
+                <div class="card-body">
+                  <h6 class="card-title fw-semibold mb-3">
+                    <i class="bi bi-heart-pulse me-2 text-primary"></i> Información de Veterinario
+                  </h6>
+                  
+                  <div class="mb-3">
+                    <label for="vet_rut" class="form-label fw-semibold">RUT</label>
+                    <input type="text" class="form-control" id="vet_rut" name="rut" 
+                           placeholder="12345678-9" value="{{ vet_data.rut|default:'' }}">
+                  </div>
+                  
+                  <div class="mb-3">
+                    <label for="vet_especialidad" class="form-label fw-semibold">Especialidad</label>
+                    <input type="text" class="form-control" id="vet_especialidad" name="especialidad"
+                           placeholder="Cirugía, Medicina Interna..." value="{{ vet_data.especialidad|default:'' }}">
+                  </div>
+                  
+                  <div class="mb-3">
+                    <label for="vet_telefono" class="form-label fw-semibold">Teléfono</label>
+                    <input type="text" class="form-control" id="vet_telefono" name="telefono"
+                           placeholder="+56912345678" value="{{ vet_data.telefono|default:'' }}">
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Contraseñas (solo para crear o si se quiere cambiar) -->
+            <div class="col-md-6">
+              <label for="{{ form.password.id_for_label }}" class="form-label fw-semibold">
+                <i class="bi bi-lock me-1"></i> Contraseña
+              </label>
+              {{ form.password }}
+              {% if editing_user_id %}
+                <div class="form-text">Dejar en blanco para mantener la actual</div>
+              {% endif %}
+            </div>
+            <div class="col-md-6">
+              <label for="{{ form.password2.id_for_label }}" class="form-label fw-semibold">
+                Confirmar Contraseña
+              </label>
+              {{ form.password2 }}
+            </div>
+            
+            <div class="col-12">
+              <div class="form-check form-switch">
+                {{ form.is_active }}
+                <label class="form-check-label fw-semibold" for="{{ form.is_active.id_for_label }}">
+                  Usuario Activo
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <div class="d-flex gap-2 mt-4">
+            {% if editing_user_id %}
+              <a href="{% url 'gestionar_personal' %}" class="btn btn-outline-secondary rounded-pill flex-grow-1">
+                <i class="bi bi-x me-2"></i> Cancelar
+              </a>
+            {% endif %}
+            <button type="submit" class="btn btn-primary rounded-pill flex-grow-1">
+              <i class="bi bi-check-lg me-2"></i> 
+              {% if editing_user_id %}Actualizar{% else %}Registrar{% endif %} Usuario
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de Personal -->
+  <div class="col-md-7">
+    <div class="card border-0 shadow rounded-3 h-100">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-3">
+          <i class="bi bi-people text-primary me-2 fs-4"></i>
+          <h5 class="card-title mb-0">Personal Registrado</h5>
+        </div>
+        
+        {% if not personal %}
+          <div class="text-center py-5">
+            <i class="bi bi-people display-4 text-muted d-block mb-3"></i>
+            <h5 class="text-muted">No hay personal registrado</h5>
+            <p class="text-muted">Comienza agregando el primer usuario</p>
+          </div>
+        {% else %}
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>Usuario</th>
+                  <th>Rol</th>
+                  <th>Estado</th>
+                  <th class="text-end">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for usuario in personal %}
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="avatar-circle bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                        <i class="bi bi-person-fill"></i>
+                      </div>
+                      <div>
+                        <strong>{{ usuario.nombre }} {{ usuario.apellido }}</strong>
+                        <br>
+                        <small class="text-muted">{{ usuario.email }}</small>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="badge 
+                      {% if usuario.rol == 'ADMIN' %}bg-danger
+                      {% elif usuario.rol == 'VETERINARIO' %}bg-success
+                      {% else %}bg-info{% endif %} rounded-pill">
+                      {{ usuario.get_rol_display }}
+                    </span>
+                    {% if usuario.rol == 'VETERINARIO' and hasattr(usuario, 'veterinario') %}
+                      <br>
+                      <small class="text-muted">{{ usuario.veterinario.especialidad|default:"General" }}</small>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <span class="badge {% if usuario.is_active %}bg-success{% else %}bg-secondary{% endif %} rounded-pill">
+                      {{ usuario.is_active|yesno:"Activo,Inactivo" }}
+                    </span>
+                  </td>
+                  <td class="text-end">
+                    <div class="btn-group" role="group">
+                      <a href="{% url 'gestionar_personal' %}?editar={{ usuario.pk }}" class="btn btn-outline-primary btn-sm rounded-pill me-1">
+                        <i class="bi bi-pencil"></i> Editar
+                      </a>
+                      <a href="{% url 'eliminar_personal' usuario.pk %}" class="btn btn-outline-danger btn-sm rounded-pill">
+                        <i class="bi bi-trash"></i> Eliminar
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const rolSelect = document.getElementById('{{ form.rol.id_for_label }}');
+  const vetFields = document.getElementById('veterinario-fields');
+  
+  function toggleVetFields() {
+    if (rolSelect.value === 'VETERINARIO') {
+      vetFields.style.display = 'block';
+    } else {
+      vetFields.style.display = 'none';
+    }
+  }
+  
+  // Ejecutar al cargar y cuando cambie el rol
+  toggleVetFields();
+  rolSelect.addEventListener('change', toggleVetFields);
+});
+</script>
+
+<style>
+.avatar-circle {
+  font-size: 1rem;
+}
+</style>
+{% endblock %}

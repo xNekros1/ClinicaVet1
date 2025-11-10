@@ -12,8 +12,8 @@ from django.core.exceptions import ValidationError
 from django.views.decorators.http import require_POST
 
 # Importamos todos los Modelos y Forms que usaremos
-from .models import Cita, Tutor, Paciente, Veterinario, HorarioDisponible
-from .forms import CitaForm, TutorForm, PacienteForm, HorarioForm
+from .models import Usuario, Cita, Tutor, Paciente, Veterinario, HorarioDisponible
+from .forms import CitaForm, TutorForm, PacienteForm, HorarioForm, PersonalForm, VeterinarioForm
 
 # -----------------------------------------------------------------
 # VISTAS DE AUTENTICACIÓN
@@ -299,3 +299,79 @@ def eliminar_horario(request, pk):
         return redirect('gestionar_horarios', vet_id=vet_id)
     context = { 'horario': horario }
     return render(request, 'core/horario_confirmar_eliminar.html', context)
+
+# ============================================================================
+# VISTAS: GESTIÓN DE PERSONAL (Solo Admin)
+# ============================================================================
+
+@login_required(login_url='login')
+def gestionar_personal(request):
+    if request.user.rol != 'ADMIN':
+        return redirect('panel')
+    
+    personal = Usuario.objects.filter(is_superuser=False).order_by('rol', 'apellido')
+    
+    # Si es POST, estamos creando o editando
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        
+        if user_id:  # Editar usuario existente
+            usuario = get_object_or_404(Usuario, pk=user_id)
+            form = PersonalForm(request.POST, instance=usuario)
+        else:  # Crear nuevo usuario
+            form = PersonalForm(request.POST)
+        
+        if form.is_valid():
+            usuario = form.save()
+            
+            # Si es veterinario, manejar el perfil extendido
+            if usuario.rol == 'VETERINARIO':
+                vet_id = request.POST.get('vet_id')
+                if vet_id:  # Editar veterinario existente
+                    veterinario = get_object_or_404(Veterinario, pk=vet_id)
+                    vet_form = VeterinarioForm(request.POST, instance=veterinario)
+                else:  # Crear nuevo veterinario
+                    vet_form = VeterinarioForm(request.POST)
+                
+                if vet_form.is_valid():
+                    veterinario = vet_form.save(commit=False)
+                    veterinario.usuario = usuario
+                    veterinario.save()
+            
+            return redirect('gestionar_personal')
+        # Si el formulario no es válido, continuamos para mostrar errores
+    
+    else:
+        # GET request - mostrar formulario vacío o para edición
+        user_id = request.GET.get('editar')
+        if user_id:
+            usuario = get_object_or_404(Usuario, pk=user_id)
+            form = PersonalForm(instance=usuario)
+            
+            # Si es veterinario, cargar datos del perfil extendido
+            vet_data = None
+            if usuario.rol == 'VETERINARIO' and hasattr(usuario, 'veterinario'):
+                vet_data = usuario.veterinario
+        else:
+            form = PersonalForm()
+            vet_data = None
+    
+    context = {
+        'personal': personal,
+        'form': form,
+        'vet_data': vet_data,
+        'editing_user_id': request.GET.get('editar')
+    }
+    return render(request, 'core/gestionar_personal.html', context)
+
+@login_required(login_url='login')
+def eliminar_personal(request, pk):
+    if request.user.rol != 'ADMIN':
+        return redirect('panel')
+    
+    usuario = get_object_or_404(Usuario, pk=pk)
+    if request.method == 'POST':
+        usuario.delete()
+        return redirect('gestionar_personal')
+    
+    return render(request, 'core/personal_confirmar_eliminar.html', {'usuario': usuario})

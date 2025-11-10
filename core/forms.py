@@ -1,7 +1,10 @@
 # core/forms.py
 
 from django import forms
-from .models import Cita, Paciente, Veterinario, Tutor, HorarioDisponible, DIA_SEMANA_CHOICES
+from .models import (
+    Cita, Paciente, Veterinario, Tutor, HorarioDisponible,
+    DIA_SEMANA_CHOICES, Usuario  # 👈 Se agregó Usuario aquí
+)
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 
@@ -99,6 +102,7 @@ class TutorForm(forms.ModelForm):
             'direccion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
 
+
 # --- Formulario de Paciente (Versión ÚNICA) ---
 class PacienteForm(forms.ModelForm):
     tutor = forms.ModelChoiceField(
@@ -135,6 +139,7 @@ class PacienteForm(forms.ModelForm):
         if self.instance and self.instance.fecha_nacimiento:
             self.initial['fecha_nacimiento'] = self.instance.fecha_nacimiento.strftime('%Y-%m-%d')
 
+
 # --- NUEVO FORMULARIO: HorarioDisponible ---
 class HorarioForm(forms.ModelForm):
     dia_semana = forms.ChoiceField(
@@ -153,3 +158,62 @@ class HorarioForm(forms.ModelForm):
     class Meta:
         model = HorarioDisponible
         fields = ['dia_semana', 'hora_inicio', 'hora_fin']
+
+
+# --- Formulario para Personal ---
+class PersonalForm(forms.ModelForm):
+    password = forms.CharField(
+        label="Contraseña",
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': '••••••••'}),
+        required=False
+    )
+    password2 = forms.CharField(
+        label="Confirmar Contraseña", 
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': '••••••••'}),
+        required=False
+    )
+    
+    class Meta:
+        model = Usuario
+        fields = ['email', 'nombre', 'apellido', 'rol', 'is_active']
+        widgets = {
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'usuario@clinica.com'}),
+            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'apellido': forms.TextInput(attrs={'class': 'form-control'}),
+            'rol': forms.Select(attrs={'class': 'form-select'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+        labels = {
+            'is_active': 'Usuario Activo'
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+        password2 = cleaned_data.get("password2")
+        
+        if password or password2:
+            if password != password2:
+                raise ValidationError("Las contraseñas no coinciden")
+        return cleaned_data
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        password = self.cleaned_data.get("password")
+        if password:
+            user.set_password(password)
+        if commit:
+            user.save()
+        return user
+
+
+# --- Formulario para Veterinario ---
+class VeterinarioForm(forms.ModelForm):
+    class Meta:
+        model = Veterinario
+        fields = ['rut', 'especialidad', 'telefono']
+        widgets = {
+            'rut': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '12345678-9'}),
+            'especialidad': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Cirugía, Medicina Interna, etc.'}),
+            'telefono': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+56912345678'}),
+        }
