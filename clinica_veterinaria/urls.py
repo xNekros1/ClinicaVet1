@@ -35,6 +35,16 @@ from core.views import (
     # NUEVAS VISTAS DE PERSONAL
     gestionar_personal,
     eliminar_personal,
+
+    # Vistas de Historial Clínico
+    listar_historiales,
+    crear_historial,
+    detalle_historial,
+    editar_historial,
+    eliminar_historial,
+
+    # Vistas de Reportes
+    reportes_view,
 )
 
 urlpatterns = [
@@ -77,4 +87,16 @@ urlpatterns = [
     # --- Rutas de Gestión de Personal ---
     path('personal/', gestionar_personal, name='gestionar_personal'),
     path('personal/eliminar/<int:pk>/', eliminar_personal, name='eliminar_personal'),
+    
+    # --- Rutas de Historial Clínico ---
+    path('historiales/', listar_historiales, name='listar_historiales'),
+    path('historiales/paciente/<int:paciente_id>/', listar_historiales, name='listar_historiales_paciente'),
+    path('historiales/nuevo/', crear_historial, name='crear_historial'),
+    path('historiales/nuevo/cita/<int:cita_id>/', crear_historial, name='crear_historial_cita'),
+    path('historiales/detalle/<int:pk>/', detalle_historial, name='detalle_historial'),
+    path('historiales/editar/<int:pk>/', editar_historial, name='editar_historial'),
+    path('historiales/eliminar/<int:pk>/', eliminar_historial, name='eliminar_historial'),
+    
+    # --- Rutas de Reportes ---
+    path('reportes/', reportes_view, name='reportes'),
 ]

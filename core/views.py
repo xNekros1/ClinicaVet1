@@ -45,15 +45,22 @@ def logout_view(request):
 def panel_view(request):
     # Solo mostrar dashboard con estadísticas si es ADMIN
     if request.user.rol == 'ADMIN':
-        # Estadísticas para el dashboard
-        total_pacientes = Paciente.objects.count()
-        total_veterinarios = Veterinario.objects.count()
-        citas_pendientes = Cita.objects.filter(
-            estado__in=['SOLICITADA', 'AGENDADA']
-        ).count()
-        citas_hoy = Cita.objects.filter(
-            fecha_hora__date=timezone.localdate()
-        ).count()
+        try:
+            # Estadísticas para el dashboard
+            total_pacientes = Paciente.objects.count()
+            total_veterinarios = Veterinario.objects.count()
+            citas_pendientes = Cita.objects.filter(
+                estado__in=['SOLICITADA', 'AGENDADA']
+            ).count()
+            citas_hoy = Cita.objects.filter(
+                fecha_hora__date=timezone.localdate()
+            ).count()
+        except Exception as e:
+            # Si hay error con la BD, usar valores por defecto
+            total_pacientes = 0
+            total_veterinarios = 0
+            citas_pendientes = 0
+            citas_hoy = 0
         
         context = {
             'total_pacientes': total_pacientes,
