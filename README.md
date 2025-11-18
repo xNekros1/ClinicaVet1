@@ -163,11 +163,14 @@ python manage.py test
 
 1. Conecta tu repositorio a Render
 2. Configura las variables de entorno en el dashboard de Render:
-   - `SECRET_KEY`
-   - `DATABASE_URL`
+   - `SECRET_KEY` (genera una nueva con: `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"`)
+   - `DATABASE_URL` (URL de tu base de datos PostgreSQL de Render)
    - `DEBUG=False`
    - `RENDER_EXTERNAL_HOSTNAME` (se configura automáticamente)
-3. El sistema detectará automáticamente el entorno de Render
+3. Configura los comandos en Render:
+   - **Build Command**: `chmod +x build.sh && ./build.sh` (o simplemente `./build.sh`)
+   - **Start Command**: `chmod +x start.sh && ./start.sh` (o simplemente `./start.sh`)
+4. El sistema ejecutará las migraciones automáticamente en cada despliegue
 
 ### Otras plataformas
 
