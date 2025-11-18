@@ -84,11 +84,13 @@
                <i class="bi bi-clock-history me-3 fs-6"></i> 
                <span>Horarios</span>
             </a>
-            <a href="#" class="nav-link nav-link-custom d-flex align-items-center">
+            <a href="{% url 'gestionar_personal' %}" 
+               class="nav-link nav-link-custom d-flex align-items-center {% if 'personal' in request.resolver_match.url_name %}active{% endif %}">
               <i class="bi bi-person-vcard me-3 fs-6"></i> 
               <span>Personal</span>
             </a>
-            <a href="#" class="nav-link nav-link-custom d-flex align-items-center">
+            <a href="{% url 'reportes' %}" 
+               class="nav-link nav-link-custom d-flex align-items-center {% if 'reporte' in request.resolver_match.url_name %}active{% endif %}">
               <i class="bi bi-clipboard-data me-3 fs-6"></i> 
               <span>Reportes</span>
             </a>

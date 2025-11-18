@@ -38,8 +38,8 @@ from core.views import (
 )
 
 urlpatterns = [
-    # --- Administración ---
-    path('admin/', admin.site.urls),
+    # --- Administración (Deshabilitado - usar interfaz personalizada) ---
+    # path('admin/', admin.site.urls),  # Comentado: usar /personal/ en su lugar
 
     # --- Autenticación ---
     path('login/', login_view, name='login'),
