@@ -1,0 +1,146 @@
+{% extends 'core/panel.html' %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-10">
+    <div class="card border-0 shadow rounded-3">
+      <div class="card-body p-4 p-md-5">
+        <div class="text-center mb-4">
+          <i class="bi bi-file-medical display-5 text-primary mb-3"></i>
+          <h3 class="card-title">Historial Clínico</h3>
+          <p class="text-muted">Información completa de la atención médica</p>
+        </div>
+
+        <div class="row g-4">
+          <!-- Información del Paciente -->
+          <div class="col-md-6">
+            <div class="card bg-light border-0 rounded-3 h-100">
+              <div class="card-body">
+                <h6 class="card-title fw-semibold mb-3">
+                  <i class="bi bi-heart-pulse me-2 text-primary"></i> Información del Paciente
+                </h6>
+                <div class="mb-3">
+                  <label class="form-label fw-bold text-muted small">Paciente</label>
+                  <div class="fs-6">{{ historial.paciente.nombre }}</div>
+                  <small class="text-muted">{{ historial.paciente.get_especie_display }}</small>
+                </div>
+                <div>
+                  <label class="form-label fw-bold text-muted small">Tutor</label>
+                  <div class="fs-6">{{ historial.paciente.tutor }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Información de la Atención -->
+          <div class="col-md-6">
+            <div class="card bg-light border-0 rounded-3 h-100">
+              <div class="card-body">
+                <h6 class="card-title fw-semibold mb-3">
+                  <i class="bi bi-calendar-event me-2 text-primary"></i> Detalles de la Atención
+                </h6>
+                <div class="mb-3">
+                  <label class="form-label fw-bold text-muted small">Veterinario</label>
+                  <div class="fs-6">{{ historial.veterinario }}</div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label fw-bold text-muted small">Fecha y Hora</label>
+                  <div class="fs-6">{{ historial.fecha_atencion|date:'l d \d\e F, H:i \h\s.' }}</div>
+                </div>
+                {% if historial.cita %}
+                <div>
+                  <label class="form-label fw-bold text-muted small">Cita Asociada</label>
+                  <div class="fs-6">
+                    <a href="{% url 'detalle_cita' historial.cita.pk %}" class="text-decoration-none">
+                      Cita del {{ historial.cita.fecha_hora|date:'d/m/Y' }}
+                    </a>
+                  </div>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Motivo de Consulta -->
+          <div class="col-12">
+            <div class="card bg-light border-0 rounded-3">
+              <div class="card-body">
+                <h6 class="card-title fw-semibold mb-3">
+                  <i class="bi bi-clipboard me-2 text-primary"></i> Motivo de la Consulta
+                </h6>
+                <div class="bg-white rounded-2 p-3 border">
+                  {{ historial.motivo|linebreaks }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Diagnóstico -->
+          <div class="col-12">
+            <div class="card bg-light border-0 rounded-3">
+              <div class="card-body">
+                <h6 class="card-title fw-semibold mb-3">
+                  <i class="bi bi-search me-2 text-primary"></i> Diagnóstico
+                </h6>
+                <div class="bg-white rounded-2 p-3 border">
+                  {{ historial.diagnostico|linebreaks }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tratamiento -->
+          <div class="col-12">
+            <div class="card bg-light border-0 rounded-3">
+              <div class="card-body">
+                <h6 class="card-title fw-semibold mb-3">
+                  <i class="bi bi-prescription me-2 text-primary"></i> Tratamiento Prescrito
+                </h6>
+                <div class="bg-white rounded-2 p-3 border">
+                  {{ historial.tratamiento|linebreaks }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notas Adicionales -->
+          {% if historial.notas %}
+          <div class="col-12">
+            <div class="card bg-light border-0 rounded-3">
+              <div class="card-body">
+                <h6 class="card-title fw-semibold mb-3">
+                  <i class="bi bi-sticky me-2 text-primary"></i> Notas Adicionales
+                </h6>
+                <div class="bg-white rounded-2 p-3 border">
+                  {{ historial.notas|linebreaks }}
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="text-center mt-5 pt-3 border-top">
+          <div class="btn-group" role="group">
+            <a href="{% url 'listar_historiales' %}" class="btn btn-outline-secondary rounded-pill px-4 me-2">
+              <i class="bi bi-arrow-left me-2"></i> Volver
+            </a>
+            {% if user.rol == "ADMIN" or user.rol == "VETERINARIO" %}
+              {% if user.rol == "ADMIN" or historial.veterinario.usuario == user %}
+                <a href="{% url 'editar_historial' historial.pk %}" class="btn btn-primary rounded-pill px-4 me-2">
+                  <i class="bi bi-pencil me-2"></i> Editar
+                </a>
+              {% endif %}
+            {% endif %}
+            {% if user.rol == "ADMIN" %}
+              <a href="{% url 'eliminar_historial' historial.pk %}" class="btn btn-outline-danger rounded-pill px-4">
+                <i class="bi bi-trash me-2"></i> Eliminar
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

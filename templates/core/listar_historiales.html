@@ -1,0 +1,168 @@
+{% extends 'core/panel.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h3 class="mb-1">Historial Clínico</h3>
+    <p class="text-muted mb-0">
+      {% if paciente %}
+        Historial de {{ paciente.nombre }}
+      {% else %}
+        Todos los historiales clínicos
+      {% endif %}
+    </p>
+  </div>
+  
+  {% if user.rol == "ADMIN" or user.rol == "VETERINARIO" %}
+    <a href="{% url 'crear_historial' %}" class="btn btn-primary btn-lg rounded-pill">
+      <i class="bi bi-plus-circle me-2"></i> Nuevo Historial
+    </a>
+  {% endif %}
+</div>
+
+<!-- Búsqueda -->
+{% if not paciente %}
+<div class="card border-0 shadow rounded-3 mb-4">
+  <div class="card-body">
+    <form method="get" class="row g-3 align-items-end">
+      <div class="col-md-9">
+        <label for="q" class="form-label fw-semibold"><i class="bi bi-search me-1"></i> Buscar</label>
+        <input type="text" class="form-control" id="q" name="q" value="{{ query }}" 
+               placeholder="Buscar por paciente, diagnóstico, tratamiento, veterinario...">
+      </div>
+      <div class="col-md-2">
+        <label for="orden" class="form-label fw-semibold">Ordenar</label>
+        <select class="form-select" id="orden" name="orden">
+          <option value="-fecha_atencion" {% if orden == '-fecha_atencion' %}selected{% endif %}>Más recientes</option>
+          <option value="fecha_atencion" {% if orden == 'fecha_atencion' %}selected{% endif %}>Más antiguos</option>
+          <option value="paciente__nombre" {% if orden == 'paciente__nombre' %}selected{% endif %}>Paciente A-Z</option>
+        </select>
+      </div>
+      <div class="col-md-1">
+        <button type="submit" class="btn btn-primary w-100 rounded-pill"><i class="bi bi-search"></i></button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endif %}
+
+{% if paciente %}
+<div class="alert alert-info rounded-3 mb-4">
+  <i class="bi bi-info-circle me-2"></i>
+  Mostrando historial de <strong>{{ paciente.nombre }}</strong> ({{ paciente.get_especie_display }})
+  <a href="{% url 'listar_historiales' %}" class="btn btn-sm btn-outline-info ms-2 rounded-pill">
+    Ver todos los historiales
+  </a>
+</div>
+{% endif %}
+
+<div class="card border-0 shadow rounded-3">
+  <div class="card-body p-0">
+    {% if historiales %}
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th class="ps-4">Paciente</th>
+              <th>Veterinario</th>
+              <th>Fecha de Atención</th>
+              <th>Diagnóstico</th>
+              <th class="text-end pe-4">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for historial in historiales %}
+            <tr>
+              <td class="ps-4">
+                <div class="d-flex align-items-center">
+                  <div class="avatar-circle bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                    <i class="bi bi-file-medical"></i>
+                  </div>
+                  <div>
+                    <strong>{{ historial.paciente.nombre }}</strong>
+                    <br>
+                    <small class="text-muted">{{ historial.paciente.get_especie_display }}</small>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-person-badge text-primary me-2"></i>
+                  {{ historial.veterinario }}
+                </div>
+              </td>
+              <td>
+                <div>
+                  <i class="bi bi-calendar3 text-primary me-2"></i>
+                  {{ historial.fecha_atencion|date:'d/m/Y H:i' }}
+                </div>
+              </td>
+              <td>
+                <div class="text-truncate" style="max-width: 200px;" title="{{ historial.diagnostico }}">
+                  {{ historial.diagnostico|truncatewords:10 }}
+                </div>
+              </td>
+              <td class="text-end pe-4">
+                <div class="btn-group" role="group">
+                  <a href="{% url 'detalle_historial' historial.pk %}" class="btn btn-outline-primary btn-sm rounded-pill me-1">
+                    <i class="bi bi-eye"></i> Ver
+                  </a>
+                  {% if user.rol == "ADMIN" or user.rol == "VETERINARIO" %}
+                    {% if user.rol == "ADMIN" or historial.veterinario.usuario == user %}
+                      <a href="{% url 'editar_historial' historial.pk %}" class="btn btn-outline-warning btn-sm rounded-pill me-1">
+                        <i class="bi bi-pencil"></i> Editar
+                      </a>
+                    {% endif %}
+                  {% endif %}
+                  {% if user.rol == "ADMIN" %}
+                    <a href="{% url 'eliminar_historial' historial.pk %}" class="btn btn-outline-danger btn-sm rounded-pill">
+                      <i class="bi bi-trash"></i> Eliminar
+                    </a>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Paginación -->
+      {% if historiales.has_other_pages %}
+      <div class="card-footer bg-white border-top">
+        <nav aria-label="Paginación">
+          <ul class="pagination justify-content-center mb-0">
+            {% if historiales.has_previous %}
+              <li class="page-item"><a class="page-link rounded-pill me-1" href="?page=1{% if query %}&q={{ query }}{% endif %}{% if orden %}&orden={{ orden }}{% endif %}"><i class="bi bi-chevron-double-left"></i></a></li>
+              <li class="page-item"><a class="page-link rounded-pill me-1" href="?page={{ historiales.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if orden %}&orden={{ orden }}{% endif %}"><i class="bi bi-chevron-left"></i></a></li>
+            {% endif %}
+            <li class="page-item active"><span class="page-link rounded-pill">Página {{ historiales.number }} de {{ historiales.paginator.num_pages }}</span></li>
+            {% if historiales.has_next %}
+              <li class="page-item"><a class="page-link rounded-pill ms-1" href="?page={{ historiales.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if orden %}&orden={{ orden }}{% endif %}"><i class="bi bi-chevron-right"></i></a></li>
+              <li class="page-item"><a class="page-link rounded-pill ms-1" href="?page={{ historiales.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}{% if orden %}&orden={{ orden }}{% endif %}"><i class="bi bi-chevron-double-right"></i></a></li>
+            {% endif %}
+          </ul>
+        </nav>
+      </div>
+      {% endif %}
+    {% else %}
+      <div class="text-center py-5">
+        <i class="bi bi-file-medical display-4 text-muted d-block mb-3"></i>
+        <h5 class="text-muted">No hay historiales clínicos registrados</h5>
+        <p class="text-muted">
+          {% if paciente %}
+            Este paciente aún no tiene historial clínico
+          {% else %}
+            Comienza creando el primer historial clínico
+          {% endif %}
+        </p>
+        {% if user.rol == "ADMIN" or user.rol == "VETERINARIO" %}
+          <a href="{% url 'crear_historial' %}" class="btn btn-primary rounded-pill mt-2">
+            <i class="bi bi-plus-circle me-2"></i> Crear Historial
+          </a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+

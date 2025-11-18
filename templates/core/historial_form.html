@@ -1,0 +1,133 @@
+{% extends 'core/panel.html' %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card border-0 shadow rounded-3">
+      <div class="card-body p-4 p-md-5">
+        <div class="text-center mb-4">
+          <i class="bi bi-file-medical display-5 text-primary mb-3"></i>
+          <h3 class="card-title">
+            {% if historial %}Editar Historial Clínico{% else %}Nuevo Historial Clínico{% endif %}
+          </h3>
+          <p class="text-muted">
+            {% if cita %}
+              Creando historial desde la cita del {{ cita.fecha_hora|date:'d/m/Y' }}
+            {% else %}
+              Registra la información médica de la atención
+            {% endif %}
+          </p>
+        </div>
+
+        <form method="post">
+          {% csrf_token %}
+          
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="{{ form.paciente.id_for_label }}" class="form-label fw-semibold">
+                <i class="bi bi-heart-pulse me-1"></i> Paciente
+              </label>
+              {{ form.paciente }}
+              {% if form.paciente.errors %}
+                <div class="text-danger small">{{ form.paciente.errors }}</div>
+              {% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label for="{{ form.veterinario.id_for_label }}" class="form-label fw-semibold">
+                <i class="bi bi-person-badge me-1"></i> Veterinario
+              </label>
+              {{ form.veterinario }}
+              {% if form.veterinario.errors %}
+                <div class="text-danger small">{{ form.veterinario.errors }}</div>
+              {% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label for="{{ form.cita.id_for_label }}" class="form-label fw-semibold">
+                <i class="bi bi-calendar-check me-1"></i> Cita Asociada (Opcional)
+              </label>
+              {{ form.cita }}
+              {% if form.cita.errors %}
+                <div class="text-danger small">{{ form.cita.errors }}</div>
+              {% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label for="{{ form.fecha_atencion.id_for_label }}" class="form-label fw-semibold">
+                <i class="bi bi-calendar3 me-1"></i> Fecha y Hora de Atención
+              </label>
+              {{ form.fecha_atencion }}
+              {% if form.fecha_atencion.errors %}
+                <div class="text-danger small">{{ form.fecha_atencion.errors }}</div>
+              {% endif %}
+            </div>
+
+            <div class="col-12">
+              <label for="{{ form.motivo.id_for_label }}" class="form-label fw-semibold">
+                <i class="bi bi-clipboard me-1"></i> Motivo de la Consulta
+              </label>
+              {{ form.motivo }}
+              {% if form.motivo.errors %}
+                <div class="text-danger small">{{ form.motivo.errors }}</div>
+              {% endif %}
+            </div>
+
+            <div class="col-12">
+              <label for="{{ form.diagnostico.id_for_label }}" class="form-label fw-semibold">
+                <i class="bi bi-search me-1"></i> Diagnóstico
+              </label>
+              {{ form.diagnostico }}
+              {% if form.diagnostico.errors %}
+                <div class="text-danger small">{{ form.diagnostico.errors }}</div>
+              {% endif %}
+            </div>
+
+            <div class="col-12">
+              <label for="{{ form.tratamiento.id_for_label }}" class="form-label fw-semibold">
+                <i class="bi bi-prescription me-1"></i> Tratamiento Prescrito
+              </label>
+              {{ form.tratamiento }}
+              {% if form.tratamiento.errors %}
+                <div class="text-danger small">{{ form.tratamiento.errors }}</div>
+              {% endif %}
+            </div>
+
+            <div class="col-12">
+              <label for="{{ form.notas.id_for_label }}" class="form-label fw-semibold">
+                <i class="bi bi-sticky me-1"></i> Notas Adicionales
+              </label>
+              {{ form.notas }}
+              {% if form.notas.errors %}
+                <div class="text-danger small">{{ form.notas.errors }}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger mt-3">
+              {{ form.non_field_errors }}
+            </div>
+          {% endif %}
+
+          <div class="d-flex gap-2 mt-4">
+            {% if historial %}
+              <a href="{% url 'detalle_historial' historial.pk %}" class="btn btn-outline-secondary rounded-pill flex-grow-1">
+                <i class="bi bi-x me-2"></i> Cancelar
+              </a>
+            {% else %}
+              <a href="{% url 'listar_historiales' %}" class="btn btn-outline-secondary rounded-pill flex-grow-1">
+                <i class="bi bi-x me-2"></i> Cancelar
+              </a>
+            {% endif %}
+            <button type="submit" class="btn btn-primary rounded-pill flex-grow-1">
+              <i class="bi bi-check-lg me-2"></i> 
+              {% if historial %}Actualizar{% else %}Guardar{% endif %} Historial
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

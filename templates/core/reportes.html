@@ -1,0 +1,293 @@
+{% extends 'core/panel.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h3 class="mb-1">Reportes y Estadísticas</h3>
+    <p class="text-muted mb-0">Análisis y estadísticas del sistema</p>
+  </div>
+</div>
+
+<!-- Filtros de Fecha -->
+<div class="card border-0 shadow rounded-3 mb-4">
+  <div class="card-body">
+    <form method="get" class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label for="fecha_inicio" class="form-label fw-semibold">Fecha Inicio</label>
+        <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" 
+               value="{{ fecha_inicio|date:'Y-m-d' }}">
+      </div>
+      <div class="col-md-4">
+        <label for="fecha_fin" class="form-label fw-semibold">Fecha Fin</label>
+        <input type="date" class="form-control" id="fecha_fin" name="fecha_fin" 
+               value="{{ fecha_fin|date:'Y-m-d' }}">
+      </div>
+      <div class="col-md-4">
+        <button type="submit" class="btn btn-primary w-100 rounded-pill">
+          <i class="bi bi-funnel me-2"></i> Filtrar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Estadísticas Generales -->
+<div class="row mb-4">
+  <div class="col-md-2 col-6 mb-3">
+    <div class="card bg-primary text-white border-0 shadow rounded-3 h-100">
+      <div class="card-body text-center">
+        <h2 class="mb-0">{{ total_pacientes }}</h2>
+        <small>Pacientes</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-2 col-6 mb-3">
+    <div class="card bg-success text-white border-0 shadow rounded-3 h-100">
+      <div class="card-body text-center">
+        <h2 class="mb-0">{{ total_tutores }}</h2>
+        <small>Tutores</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-2 col-6 mb-3">
+    <div class="card bg-info text-white border-0 shadow rounded-3 h-100">
+      <div class="card-body text-center">
+        <h2 class="mb-0">{{ total_veterinarios }}</h2>
+        <small>Veterinarios</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-2 col-6 mb-3">
+    <div class="card bg-warning text-dark border-0 shadow rounded-3 h-100">
+      <div class="card-body text-center">
+        <h2 class="mb-0">{{ total_citas }}</h2>
+        <small>Total Citas</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-2 col-6 mb-3">
+    <div class="card bg-secondary text-white border-0 shadow rounded-3 h-100">
+      <div class="card-body text-center">
+        <h2 class="mb-0">{{ citas_periodo }}</h2>
+        <small>Citas en Período</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-2 col-6 mb-3">
+    <div class="card bg-dark text-white border-0 shadow rounded-3 h-100">
+      <div class="card-body text-center">
+        <h2 class="mb-0">{{ total_historiales }}</h2>
+        <small>Historiales</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <!-- Citas por Estado -->
+  <div class="col-md-6 mb-4">
+    <div class="card border-0 shadow rounded-3 h-100">
+      <div class="card-body">
+        <h5 class="card-title mb-4">
+          <i class="bi bi-pie-chart me-2 text-primary"></i> Citas por Estado (Período)
+        </h5>
+        {% if citas_por_estado %}
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Estado</th>
+                  <th class="text-end">Cantidad</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in citas_por_estado %}
+                <tr>
+                  <td>
+                    <span class="badge 
+                      {% if item.estado == 'FINALIZADA' %}bg-success
+                      {% elif item.estado == 'CANCELADA' or item.estado == 'NO_ASISTIO' %}bg-danger
+                      {% elif item.estado == 'AGENDADA' %}bg-info
+                      {% elif item.estado == 'SOLICITADA' %}bg-warning
+                      {% else %}bg-secondary{% endif %} rounded-pill">
+                      {{ item.estado }}
+                    </span>
+                  </td>
+                  <td class="text-end"><strong>{{ item.total }}</strong></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p class="text-muted text-center">No hay datos en el período seleccionado</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Pacientes por Especie -->
+  <div class="col-md-6 mb-4">
+    <div class="card border-0 shadow rounded-3 h-100">
+      <div class="card-body">
+        <h5 class="card-title mb-4">
+          <i class="bi bi-heart-pulse me-2 text-primary"></i> Pacientes por Especie
+        </h5>
+        {% if pacientes_por_especie %}
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Especie</th>
+                  <th class="text-end">Cantidad</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in pacientes_por_especie %}
+                <tr>
+                  <td>
+                    <span class="badge bg-primary rounded-pill">
+                      {{ item.especie }}
+                    </span>
+                  </td>
+                  <td class="text-end"><strong>{{ item.total }}</strong></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p class="text-muted text-center">No hay pacientes registrados</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Veterinarios - Citas -->
+  <div class="col-md-6 mb-4">
+    <div class="card border-0 shadow rounded-3 h-100">
+      <div class="card-body">
+        <h5 class="card-title mb-4">
+          <i class="bi bi-person-badge me-2 text-primary"></i> Top Veterinarios - Citas (Período)
+        </h5>
+        {% if citas_por_veterinario %}
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Veterinario</th>
+                  <th class="text-end">Citas</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in citas_por_veterinario %}
+                <tr>
+                  <td>{{ item.veterinario__usuario__nombre }} {{ item.veterinario__usuario__apellido }}</td>
+                  <td class="text-end"><strong>{{ item.total }}</strong></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p class="text-muted text-center">No hay datos en el período seleccionado</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Veterinarios - Historiales -->
+  <div class="col-md-6 mb-4">
+    <div class="card border-0 shadow rounded-3 h-100">
+      <div class="card-body">
+        <h5 class="card-title mb-4">
+          <i class="bi bi-file-medical me-2 text-primary"></i> Top Veterinarios - Historiales (Período)
+        </h5>
+        {% if historiales_por_veterinario %}
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Veterinario</th>
+                  <th class="text-end">Historiales</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in historiales_por_veterinario %}
+                <tr>
+                  <td>{{ item.veterinario__usuario__nombre }} {{ item.veterinario__usuario__apellido }}</td>
+                  <td class="text-end"><strong>{{ item.total }}</strong></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p class="text-muted text-center">No hay datos en el período seleccionado</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Citas por Día (Últimos 7 días) -->
+  <div class="col-12 mb-4">
+    <div class="card border-0 shadow rounded-3">
+      <div class="card-body">
+        <h5 class="card-title mb-4">
+          <i class="bi bi-calendar-week me-2 text-primary"></i> Citas por Día (Últimos 7 días)
+        </h5>
+        <div class="table-responsive">
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th class="text-end">Cantidad de Citas</th>
+                <th class="text-end">Barra</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in citas_por_dia %}
+              <tr>
+                <td>{{ item.fecha|date:'l d/m/Y' }}</td>
+                <td class="text-end"><strong>{{ item.total }}</strong></td>
+                <td>
+                  <div class="progress" style="height: 20px;">
+                    {% if item.total > 0 %}
+                      {% if item.total > 10 %}
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 100%" aria-valuenow="{{ item.total }}" aria-valuemin="0" aria-valuemax="10">{{ item.total }}</div>
+                      {% elif item.total == 10 %}
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 100%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="10">10</div>
+                      {% elif item.total == 9 %}
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 90%" aria-valuenow="9" aria-valuemin="0" aria-valuemax="10">9</div>
+                      {% elif item.total == 8 %}
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 80%" aria-valuenow="8" aria-valuemin="0" aria-valuemax="10">8</div>
+                      {% elif item.total == 7 %}
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 70%" aria-valuenow="7" aria-valuemin="0" aria-valuemax="10">7</div>
+                      {% elif item.total == 6 %}
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 60%" aria-valuenow="6" aria-valuemin="0" aria-valuemax="10">6</div>
+                      {% elif item.total == 5 %}
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 50%" aria-valuenow="5" aria-valuemin="0" aria-valuemax="10">5</div>
+                      {% elif item.total == 4 %}
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 40%" aria-valuenow="4" aria-valuemin="0" aria-valuemax="10">4</div>
+                      {% elif item.total == 3 %}
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 30%" aria-valuenow="3" aria-valuemin="0" aria-valuemax="10">3</div>
+                      {% elif item.total == 2 %}
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 20%" aria-valuenow="2" aria-valuemin="0" aria-valuemax="10">2</div>
+                      {% else %}
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 10%" aria-valuenow="1" aria-valuemin="0" aria-valuemax="10">1</div>
+                      {% endif %}
+                    {% else %}
+                      <div class="progress-bar bg-primary" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="10"></div>
+                    {% endif %}
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
