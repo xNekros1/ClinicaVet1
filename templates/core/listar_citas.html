@@ -1,47 +1,47 @@
 {% extends 'core/panel.html' %}
 {% block content %}
 
-<div class='d-flex justify-content-between align-items-center mb-4'>
+<div class="d-flex justify-content-between align-items-center mb-4">
   <div>
-    <h3 class='mb-1'>Agenda del Día</h3>
-    <p class='text-muted mb-0'>{{ current_date|date:'l d \d\e F' }}</p>
+    <h3 class="mb-1">Agenda del DÃ­a</h3>
+    <p class="text-muted mb-0">{{ current_date|date:"l d \d\e F" }}</p>
   </div>
   <div>
     {% if user.rol == 'ADMIN' %}
-    <a href='{% url 'reportes' %}' class='btn btn-outline-secondary btn-lg rounded-pill me-2'>
-      <i class='bi bi-file-earmark-bar-graph me-2'></i> Reportes
+    <a href="{% url 'reportes' %}" class="btn btn-outline-secondary btn-lg rounded-pill me-2">
+      <i class="bi bi-file-earmark-bar-graph me-2"></i> Reportes
     </a>
     {% endif %}
-    <a href='{% url 'crear_cita' %}' class='btn btn-primary btn-lg rounded-pill'>
-      <i class='bi bi-plus-circle me-2'></i> Agendar Nueva Cita
+    <a href="{% url 'crear_cita' %}" class="btn btn-primary btn-lg rounded-pill">
+      <i class="bi bi-plus-circle me-2"></i> Agendar Nueva Cita
     </a>
   </div>
 </div>
 
-<!-- Filtros y Navegación -->
-<div class='card border-0 shadow rounded-3 mb-4'>
-  <div class='card-body'>
-    <form method='GET' action='{% url 'listar_citas' %}' class='row g-3 align-items-center'>
-      <input type='hidden' name='fecha' value='{{ current_date|date:'Y-m-d' }}'>
-      <div class='col-md-4'>
-        <label for='veterinario' class='form-label fw-semibold'>Filtrar por Veterinario:</label>
-        <select name='veterinario' id='veterinario' class='form-select rounded-pill' onchange='this.form.submit();'>
-          <option value=''>-- Todos los Veterinarios --</option>
+<!-- Filtros y NavegaciÃ³n -->
+<div class="card border-0 shadow rounded-3 mb-4">
+  <div class="card-body">
+    <form method="GET" action="{% url 'listar_citas' %}" class="row g-3 align-items-center">
+      <input type="hidden" name="fecha" value="{{ current_date|date:'Y-m-d' }}">
+      <div class="col-md-4">
+        <label for="veterinario" class="form-label fw-semibold">Filtrar por Veterinario:</label>
+        <select name="veterinario" id="veterinario" class="form-select rounded-pill" onchange="this.form.submit();">
+          <option value="">-- Todos los Veterinarios --</option>
           {% for vet in veterinarios %}
-          <option value='{{ vet.usuario.id }}' {% if vet.usuario.id == selected_vet_id %}selected{% endif %}>
+          <option value="{{ vet.usuario.id }}" {% if vet.usuario.id == selected_vet_id %}selected{% endif %}>
             {{ vet }}
           </option>
           {% endfor %}
         </select>
       </div>
-      <div class='col-md-8 text-end'>
-        <a href='{% url 'listar_citas' %}?fecha={{ previous_day|date:'Y-m-d' }}{% if selected_vet_id %}&veterinario={{ selected_vet_id }}{% endif %}'
-          class='btn btn-outline-primary rounded-pill'>
-          <i class='bi bi-chevron-left me-1'></i> Día Anterior
+      <div class="col-md-8 text-end">
+        <a href="{% url 'listar_citas' %}?fecha={{ previous_day|date:'Y-m-d' }}{% if selected_vet_id %}&veterinario={{ selected_vet_id }}{% endif %}"
+          class="btn btn-outline-primary rounded-pill">
+          <i class="bi bi-chevron-left me-1"></i> DÃ­a Anterior
         </a>
-        <a href='{% url 'listar_citas' %}?fecha={{ next_day|date:'Y-m-d' }}{% if selected_vet_id %}&veterinario={{ selected_vet_id }}{% endif %}'
-          class='btn btn-outline-primary rounded-pill ms-2'>
-          Día Siguiente <i class='bi bi-chevron-right ms-1'></i>
+        <a href="{% url 'listar_citas' %}?fecha={{ next_day|date:'Y-m-d' }}{% if selected_vet_id %}&veterinario={{ selected_vet_id }}{% endif %}"
+          class="btn btn-outline-primary rounded-pill ms-2">
+          DÃ­a Siguiente <i class="bi bi-chevron-right ms-1"></i>
         </a>
       </div>
     </form>
@@ -49,77 +49,77 @@
 </div>
 
 <!-- Tabla de Citas -->
-<div class='card border-0 shadow rounded-3'>
-  <div class='card-body p-0'>
-    <div class='table-responsive'>
-      <table class='table table-hover align-middle mb-0'>
-        <thead class='table-light'>
+<div class="card border-0 shadow rounded-3">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
           <tr>
-            <th class='ps-4'>Paciente</th>
+            <th class="ps-4">Paciente</th>
             <th>Veterinario</th>
             <th>Hora</th>
             <th>Motivo</th>
             <th>Estado</th>
-            <th class='text-end pe-4'>Acciones</th>
+            <th class="text-end pe-4">Acciones</th>
           </tr>
         </thead>
         <tbody>
           {% for cita in citas %}
           <tr>
-            <td class='ps-4'>
-              <div class='d-flex align-items-center'>
-                <i class='bi bi-heart-pulse text-primary me-3'></i>
+            <td class="ps-4">
+              <div class="d-flex align-items-center">
+                <i class="bi bi-heart-pulse text-primary me-3"></i>
                 <div>
                   <strong>{{ cita.paciente }}</strong>
                   <br>
-                  <small class='text-muted'>{{ cita.paciente.tutor }}</small>
+                  <small class="text-muted">{{ cita.paciente.tutor }}</small>
                 </div>
               </div>
             </td>
             <td>
-              <span class='fw-semibold'>{{ cita.veterinario }}</span>
+              <span class="fw-semibold">{{ cita.veterinario }}</span>
             </td>
             <td>
-              <span class='badge bg-light text-dark fs-6'>{{ cita.fecha_hora|date:'H:i' }}</span>
+              <span class="badge bg-light text-dark fs-6">{{ cita.fecha_hora|date:"H:i" }}</span>
             </td>
             <td>
-              <span class='text-truncate d-inline-block' style='max-width: 200px;' title='{{ cita.motivo_consulta }}'>
+              <span class="text-truncate d-inline-block" style="max-width: 200px;" title="{{ cita.motivo_consulta }}">
                 {{ cita.motivo_consulta }}
               </span>
             </td>
             <td>
               {% if cita.estado == 'SOLICITADA' %}
-              <span class='badge bg-warning text-dark'>{{ cita.get_estado_display }}</span>
+              <span class="badge bg-warning text-dark">{{ cita.get_estado_display }}</span>
               {% elif cita.estado == 'AGENDADA' %}
-              <span class='badge bg-info'>{{ cita.get_estado_display }}</span>
+              <span class="badge bg-info">{{ cita.get_estado_display }}</span>
               {% elif cita.estado in 'CANCELADA,NO_ASISTIO' %}
-              <span class='badge bg-danger'>{{ cita.get_estado_display }}</span>
+              <span class="badge bg-danger">{{ cita.get_estado_display }}</span>
               {% elif cita.estado == 'REALIZADO' %}
-              <span class='badge bg-success'>{{ cita.get_estado_display }}</span>
+              <span class="badge bg-success">{{ cita.get_estado_display }}</span>
               {% else %}
-              <span class='badge bg-secondary'>{{ cita.get_estado_display }}</span>
+              <span class="badge bg-secondary">{{ cita.get_estado_display }}</span>
               {% endif %}
             </td>
-            <td class='text-end pe-4'>
-              <div class='btn-group' role='group'>
-                <a href='{% url 'detalle_cita' cita.id %}' class='btn btn-outline-primary btn-sm rounded-pill me-1'>
-                  <i class='bi bi-eye'></i>
+            <td class="text-end pe-4">
+              <div class="btn-group" role="group">
+                <a href="{% url 'detalle_cita' cita.id %}" class="btn btn-outline-primary btn-sm rounded-pill me-1">
+                  <i class="bi bi-eye"></i>
                 </a>
 
-                {% if user.rol in 'ADMIN,RECEPCIONISTA' %}
+                {% if user.rol in "ADMIN,RECEPCIONISTA" %}
                 {% if cita.estado == 'SOLICITADA' %}
-                <form action='{% url 'confirmar_cita' cita.pk %}' method='POST' style='display: inline;'>
+                <form action="{% url 'confirmar_cita' cita.pk %}" method="POST" style="display: inline;">
                   {% csrf_token %}
-                  <button type='submit' class='btn btn-success btn-sm rounded-pill me-1'>
-                    <i class='bi bi-check-lg'></i>
+                  <button type="submit" class="btn btn-success btn-sm rounded-pill me-1">
+                    <i class="bi bi-check-lg"></i>
                   </button>
                 </form>
                 {% endif %}
-                <a href='{% url 'editar_cita' cita.id %}' class='btn btn-outline-primary btn-sm rounded-pill me-1'>
-                  <i class='bi bi-pencil'></i>
+                <a href="{% url 'editar_cita' cita.id %}" class="btn btn-outline-primary btn-sm rounded-pill me-1">
+                  <i class="bi bi-pencil"></i>
                 </a>
-                <a href='{% url 'eliminar_cita' cita.id %}' class='btn btn-outline-danger btn-sm rounded-pill'>
-                  <i class='bi bi-x-lg'></i>
+                <a href="{% url 'eliminar_cita' cita.id %}" class="btn btn-outline-danger btn-sm rounded-pill">
+                  <i class="bi bi-x-lg"></i>
                 </a>
                 {% endif %}
               </div>
@@ -127,12 +127,12 @@
           </tr>
           {% empty %}
           <tr>
-            <td colspan='6' class='text-center py-5'>
-              <i class='bi bi-calendar-x display-4 text-muted d-block mb-3'></i>
-              <h5 class='text-muted'>No hay citas agendadas para este día</h5>
-              <p class='text-muted'>Agenda una nueva cita para comenzar</p>
-              <a href='{% url 'crear_cita' %}' class='btn btn-primary rounded-pill mt-2'>
-                <i class='bi bi-plus-circle me-2'></i> Agendar Cita
+            <td colspan="6" class="text-center py-5">
+              <i class="bi bi-calendar-x display-4 text-muted d-block mb-3"></i>
+              <h5 class="text-muted">No hay citas agendadas para este dÃ­a</h5>
+              <p class="text-muted">Agenda una nueva cita para comenzar</p>
+              <a href="{% url 'crear_cita' %}" class="btn btn-primary rounded-pill mt-2">
+                <i class="bi bi-plus-circle me-2"></i> Agendar Cita
               </a>
             </td>
           </tr>
