@@ -1,0 +1,82 @@
+{% extends 'core/panel.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow rounded-3">
+            <div class="card-body p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <i class="bi bi-clipboard-check display-5 text-success mb-3"></i>
+                    <h3 class="card-title">Finalizar Consulta</h3>
+                    <p class="text-muted">Complete los detalles de la atención para cerrar la cita</p>
+                </div>
+
+                <div class="alert alert-light border mb-4">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-person-circle fs-4 me-2 text-primary"></i>
+                        <strong>Paciente:</strong> <span class="ms-2">{{ cita.paciente.nombre }} ({{
+                            cita.paciente.get_especie_display }})</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-clock fs-4 me-2 text-primary"></i>
+                        <strong>Hora Cita:</strong> <span class="ms-2">{{ cita.fecha_hora|date:"d/m/Y H:i" }}</span>
+                    </div>
+                </div>
+
+                <form method="post" class="mt-4">
+                    {% csrf_token %}
+
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="{{ form.observaciones_veterinario.id_for_label }}"
+                                class="form-label fw-semibold">
+                                <i class="bi bi-file-medical me-1"></i> Observaciones y Diagnóstico
+                            </label>
+                            {{ form.observaciones_veterinario }}
+                            <div class="form-text">Detalle el diagnóstico, tratamiento y recomendaciones.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="{{ form.monto.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-currency-dollar me-1"></i> Costo Total
+                            </label>
+                            {{ form.monto }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="{{ form.tipo_pago.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-credit-card me-1"></i> Tipo de Pago
+                            </label>
+                            {{ form.tipo_pago }}
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top">
+                        <a href="{% url 'listar_citas_actuales' %}" class="btn btn-outline-secondary rounded-pill">
+                            <i class="bi bi-arrow-left me-2"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success rounded-pill px-4">
+                            <i class="bi bi-check-circle me-2"></i> Finalizar Cita
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control,
+    .form-select {
+        border-radius: 0.75rem;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #198754;
+        box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.1);
+    }
+</style>
+{% endblock %}

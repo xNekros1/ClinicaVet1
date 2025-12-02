@@ -1,0 +1,76 @@
+{% extends 'core/panel.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="mb-1">Citas Actuales</h3>
+        <p class="text-muted mb-0">Citas programadas para hoy: {{ hoy|date:"d/m/Y" }}</p>
+    </div>
+</div>
+
+<div class="card border-0 shadow rounded-3">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Hora</th>
+                        <th>Paciente</th>
+                        <th>Tutor</th>
+                        <th>Veterinario</th>
+                        <th>Estado</th>
+                        <th class="text-end pe-4">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cita in citas %}
+                    <tr>
+                        <td class="ps-4 fw-bold text-primary">
+                            {{ cita.fecha_hora|date:"H:i" }}
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-circle {% if cita.paciente.especie == 'CANINO' %}bg-warning{% elif cita.paciente.especie == 'FELINO' %}bg-info{% else %}bg-secondary{% endif %} text-white rounded-circle d-flex align-items-center justify-content-center me-3"
+                                    style="width: 40px; height: 40px;">
+                                    <i
+                                        class="bi bi-{% if cita.paciente.especie == 'CANINO' %}dog{% elif cita.paciente.especie == 'FELINO' %}cat{% else %}heart{% endif %}"></i>
+                                </div>
+                                <div>
+                                    <strong>{{ cita.paciente.nombre }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ cita.paciente.raza }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {{ cita.paciente.tutor.nombre }} {{ cita.paciente.tutor.apellido }}
+                        </td>
+                        <td>
+                            {{ cita.veterinario }}
+                        </td>
+                        <td>
+                            <span
+                                class="badge {% if cita.estado == 'AGENDADA' %}bg-primary{% elif cita.estado == 'CONFIRMADA' %}bg-success{% else %}bg-info{% endif %} rounded-pill">
+                                {{ cita.get_estado_display }}
+                            </span>
+                        </td>
+                        <td class="text-end pe-4">
+                            <a href="{% url 'finalizar_cita' cita.id %}" class="btn btn-success btn-sm rounded-pill">
+                                <i class="bi bi-check-lg me-1"></i> Realizar Consulta
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <i class="bi bi-calendar-check display-4 text-muted d-block mb-3"></i>
+                            <h5 class="text-muted">No hay citas pendientes para hoy</h5>
+                            <p class="text-muted">Todas las citas han sido atendidas o no hay agenda.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

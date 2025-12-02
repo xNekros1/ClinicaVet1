@@ -162,6 +162,21 @@ class Cita(models.Model):
         blank=True,
         related_name="citas_creadas"
     )
+    
+    # Campos para finalización de cita (Veterinario)
+    monto = models.DecimalField(max_digits=10, decimal_places=0, null=True, blank=True, help_text="Monto total de la consulta")
+    tipo_pago = models.CharField(
+        max_length=20,
+        choices=[
+            ('DEBITO', 'Débito'),
+            ('CREDITO', 'Crédito'),
+            ('EFECTIVO', 'Efectivo')
+        ],
+        null=True,
+        blank=True,
+        help_text="Tipo de pago realizado"
+    )
+    observaciones_veterinario = models.TextField(blank=True, help_text="Observaciones y resumen de la atención por parte del veterinario")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     def __str__(self):

@@ -1,10 +1,11 @@
-# core/views.py
+
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 import json
+from django.db.models import Sum
 from django.utils import timezone
 from datetime import timedelta
 from django.urls import reverse 
@@ -13,7 +14,7 @@ from django.views.decorators.http import require_POST
 
 # Importamos todos los Modelos y Forms que usaremos
 from .models import Usuario, Cita, Tutor, Paciente, Veterinario, HorarioDisponible
-from .forms import CitaForm, TutorForm, PacienteForm, HorarioForm, PersonalForm, VeterinarioForm
+from .forms import CitaForm, TutorForm, PacienteForm, HorarioForm, PersonalForm, VeterinarioForm, CitaFinalizarForm, ReporteForm
 
 # -----------------------------------------------------------------
 # VISTAS DE AUTENTICACIÓN
@@ -382,3 +383,111 @@ def eliminar_personal(request, pk):
         return redirect('gestionar_personal')
     
     return render(request, 'core/personal_confirmar_eliminar.html', {'usuario': usuario})
+
+# ============================================================================
+# VISTAS: GESTIÓN DE USUARIOS (Solo Interfaz por ahora)
+# ============================================================================
+
+@login_required(login_url='login')
+def gestion_usuarios(request):
+    if request.user.rol != 'ADMIN':
+        return redirect('panel')
+    usuarios = Usuario.objects.all().order_by('-created_at')
+    return render(request, 'core/gestion_usuarios.html', {'usuarios': usuarios})
+
+@login_required(login_url='login')
+def crear_usuario(request):
+    if request.user.rol != 'ADMIN':
+        return redirect('gestion_usuarios')
+    # Solo renderiza el formulario, no guarda datos (CRUD no funcional)
+    form = PersonalForm()
+    return render(request, 'core/usuario_form.html', {'form': form})
+
+@login_required(login_url='login')
+def crear_veterinario(request):
+    if request.user.rol != 'ADMIN':
+        return redirect('gestion_usuarios')
+    # Solo renderiza el formulario, no guarda datos (CRUD no funcional)
+    form_usuario = PersonalForm(initial={'rol': 'VETERINARIO'})
+    form_veterinario = VeterinarioForm()
+    context = {
+        'form_usuario': form_usuario,
+        'form_veterinario': form_veterinario
+    }
+    return render(request, 'core/veterinario_form.html', context)
+
+# ============================================================================
+# VISTAS: CITAS ACTUALES (ADMIN/VETERINARIO)
+# ============================================================================
+
+@login_required(login_url='login')
+def listar_citas_actuales(request):
+    if request.user.rol not in ['ADMIN', 'VETERINARIO']:
+        return redirect('panel')
+    
+    # Mostrar citas de hoy que estén AGENDADAS, CONFIRMADAS o EN_CURSO
+    hoy = timezone.localdate()
+    citas = Cita.objects.filter(
+        fecha_hora__date=hoy,
+        estado__in=['AGENDADA', 'CONFIRMADA', 'EN_CURSO']
+    ).order_by('fecha_hora')
+    
+    return render(request, 'core/listar_citas_actuales.html', {'citas': citas, 'hoy': hoy})
+
+@login_required(login_url='login')
+def finalizar_cita(request, pk):
+    if request.user.rol not in ['ADMIN', 'VETERINARIO']:
+        return redirect('panel')
+    
+    cita = get_object_or_404(Cita, pk=pk)
+    
+    if request.method == 'POST':
+        form = CitaFinalizarForm(request.POST, instance=cita)
+        if form.is_valid():
+            cita_finalizada = form.save(commit=False)
+            cita_finalizada.estado = 'FINALIZADA' # Cambiar estado a REALIZADO/FINALIZADA
+            cita_finalizada.save()
+            return redirect('listar_citas_actuales')
+    else:
+        form = CitaFinalizarForm(instance=cita)
+    
+    return render(request, 'core/finalizar_cita_form.html', {'form': form, 'cita': cita})
+
+# ============================================================================
+# VISTAS: REPORTES (Solo Admin)
+# ============================================================================
+
+@login_required(login_url='login')
+def reportes_view(request):
+    if request.user.rol != 'ADMIN':
+        return redirect('panel')
+    
+    citas = []
+    total_ingresos = 0
+    form = ReporteForm(request.GET or None)
+    
+    if form.is_valid():
+        fecha_inicio = form.cleaned_data['fecha_inicio']
+        fecha_fin = form.cleaned_data['fecha_fin']
+        paciente = form.cleaned_data['paciente']
+        
+        # Filtro base: Citas finalizadas en el rango de fechas
+        citas = Cita.objects.filter(
+            estado='FINALIZADA',
+            fecha_hora__date__range=[fecha_inicio, fecha_fin]
+        )
+        
+        # Filtro opcional por paciente
+        if paciente:
+            citas = citas.filter(paciente=paciente)
+            
+        citas = citas.order_by('fecha_hora')
+        
+        # Calcular total de ingresos
+        total_ingresos = citas.aggregate(Sum('monto'))['monto__sum'] or 0
+        
+    return render(request, 'core/reportes.html', {
+        'form': form,
+        'citas': citas,
+        'total_ingresos': total_ingresos
+    })

@@ -4,23 +4,18 @@ Django settings for clinica_veterinaria project.
 
 from pathlib import Path
 import os
-import dj_database_url
-
+from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ---------------------------
 # Configuración general
 # ---------------------------
 
-SECRET_KEY = 'django-insecure-@&awad%i@99$yy%rxtrb4r0ne%endm(0q56=9*df@$xdut6j%1'
 
 # Render define la variable RENDER en el entorno de producción
-DEBUG = 'RENDER' not in os.environ
+DEBUG = True
 
-ALLOWED_HOSTS = ['localhost']
-RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
-if RENDER_EXTERNAL_HOSTNAME:
-    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+ALLOWED_HOSTS = ['localhost','127.0.0.1']
 
 # ---------------------------
 # Aplicaciones instaladas
@@ -71,15 +66,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'clinica_veterinaria.wsgi.application'
 
+load_dotenv()
+SECRET_KEY = os.getenv('SECRET_KEY')
+DEBUG = os.getenv('DEBUG')
+
+# Configuración de Supabase
+SUPABASE_URL = os.getenv('SUPABASE_URL')
 # ---------------------------
 # Base de datos (Supabase)
 # ---------------------------
 DATABASES = {
-    'default': dj_database_url.config(
-        default='postgresql://postgres.ngfwjqvusjlbioleccwh:Admin12%40@aws-1-us-east-2.pooler.supabase.com:6543/postgres',
-        conn_max_age=600,
-        ssl_require=True
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
+    }
 }
 
 # ---------------------------

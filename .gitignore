@@ -63,6 +63,7 @@ dmypy.json
 .idea/
 *.sublime-project
 *.sublime-workspace
+.gemini
 
 # Env variables
 .env

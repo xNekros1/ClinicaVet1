@@ -1,4 +1,4 @@
-# clinica_veterinaria/urls.py
+
 
 from django.contrib import admin
 from django.urls import path
@@ -37,19 +37,28 @@ from core.views import (
     eliminar_personal,
 
     # Vistas de Historial Clínico
-    listar_historiales,
-    crear_historial,
-    detalle_historial,
-    editar_historial,
-    eliminar_historial,
+    # listar_historiales,
+    # crear_historial,
+    # detalle_historial,
+    # editar_historial,
+    # eliminar_historial,
 
     # Vistas de Reportes
     reportes_view,
+
+    # Vistas de Gestión de Usuarios
+    gestion_usuarios,
+    crear_usuario,
+    crear_veterinario,
+
+    # Vistas de Citas Actuales
+    listar_citas_actuales,
+    finalizar_cita,
 )
 
 urlpatterns = [
-    # --- Administración (Deshabilitado - usar interfaz personalizada) ---
-    # path('admin/', admin.site.urls),  # Comentado: usar /personal/ en su lugar
+    # --- Administración ---
+    path('admin/', admin.site.urls),
 
     # --- Autenticación ---
     path('login/', login_view, name='login'),
@@ -89,14 +98,23 @@ urlpatterns = [
     path('personal/eliminar/<int:pk>/', eliminar_personal, name='eliminar_personal'),
     
     # --- Rutas de Historial Clínico ---
-    path('historiales/', listar_historiales, name='listar_historiales'),
-    path('historiales/paciente/<int:paciente_id>/', listar_historiales, name='listar_historiales_paciente'),
-    path('historiales/nuevo/', crear_historial, name='crear_historial'),
-    path('historiales/nuevo/cita/<int:cita_id>/', crear_historial, name='crear_historial_cita'),
-    path('historiales/detalle/<int:pk>/', detalle_historial, name='detalle_historial'),
-    path('historiales/editar/<int:pk>/', editar_historial, name='editar_historial'),
-    path('historiales/eliminar/<int:pk>/', eliminar_historial, name='eliminar_historial'),
+    # path('historiales/', listar_historiales, name='listar_historiales'),
+    # path('historiales/paciente/<int:paciente_id>/', listar_historiales, name='listar_historiales_paciente'),
+    # path('historiales/nuevo/', crear_historial, name='crear_historial'),
+    # path('historiales/nuevo/cita/<int:cita_id>/', crear_historial, name='crear_historial_cita'),
+    # path('historiales/detalle/<int:pk>/', detalle_historial, name='detalle_historial'),
+    # path('historiales/editar/<int:pk>/', editar_historial, name='editar_historial'),
+    # path('historiales/eliminar/<int:pk>/', eliminar_historial, name='eliminar_historial'),
     
     # --- Rutas de Reportes ---
     path('reportes/', reportes_view, name='reportes'),
+
+    # --- Rutas de Gestión de Usuarios ---
+    path('gestion-usuarios/', gestion_usuarios, name='gestion_usuarios'),
+    path('gestion-usuarios/nuevo/', crear_usuario, name='crear_usuario'),
+    path('gestion-usuarios/veterinario/nuevo/', crear_veterinario, name='crear_veterinario'),
+
+    # --- Rutas de Citas Actuales ---
+    path('citas-actuales/', listar_citas_actuales, name='listar_citas_actuales'),
+    path('citas-actuales/finalizar/<int:pk>/', finalizar_cita, name='finalizar_cita'),
 ]
