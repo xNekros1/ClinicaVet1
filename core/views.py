@@ -445,7 +445,7 @@ def finalizar_cita(request, pk):
         form = CitaFinalizarForm(request.POST, instance=cita)
         if form.is_valid():
             cita_finalizada = form.save(commit=False)
-            cita_finalizada.estado = 'FINALIZADA' # Cambiar estado a REALIZADO/FINALIZADA
+            cita_finalizada.estado = 'REALIZADO' # Cambiar estado a REALIZADO/FINALIZADA
             cita_finalizada.save()
             return redirect('listar_citas_actuales')
     else:
@@ -473,7 +473,7 @@ def reportes_view(request):
         
         # Filtro base: Citas finalizadas en el rango de fechas
         citas = Cita.objects.filter(
-            estado='FINALIZADA',
+            estado='REALIZADO',
             fecha_hora__date__range=[fecha_inicio, fecha_fin]
         )
         

@@ -49,15 +49,15 @@
                   <label class="form-label fw-bold text-muted small">Estado</label>
                   <div>
                     {% if cita.estado == 'SOLICITADA' %}
-                      <span class="badge bg-warning text-dark rounded-pill">{{ cita.get_estado_display }}</span>
+                    <span class="badge bg-warning text-dark rounded-pill">{{ cita.get_estado_display }}</span>
                     {% elif cita.estado == 'AGENDADA' %}
-                      <span class="badge bg-info rounded-pill">{{ cita.get_estado_display }}</span>
+                    <span class="badge bg-info rounded-pill">{{ cita.get_estado_display }}</span>
                     {% elif cita.estado in 'CANCELADA,NO_ASISTIO' %}
-                      <span class="badge bg-danger rounded-pill">{{ cita.get_estado_display }}</span>
-                    {% elif cita.estado == 'FINALIZADA' %}
-                      <span class="badge bg-success rounded-pill">{{ cita.get_estado_display }}</span>
+                    <span class="badge bg-danger rounded-pill">{{ cita.get_estado_display }}</span>
+                    {% elif cita.estado == 'REALIZADO' %}
+                    <span class="badge bg-success rounded-pill">{{ cita.get_estado_display }}</span>
                     {% else %}
-                      <span class="badge bg-secondary rounded-pill">{{ cita.get_estado_display }}</span>
+                    <span class="badge bg-secondary rounded-pill">{{ cita.get_estado_display }}</span>
                     {% endif %}
                   </div>
                 </div>

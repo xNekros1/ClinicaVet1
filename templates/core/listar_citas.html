@@ -27,7 +27,7 @@
         <select name="veterinario" id="veterinario" class="form-select rounded-pill" onchange="this.form.submit();">
           <option value="">-- Todos los Veterinarios --</option>
           {% for vet in veterinarios %}
-          <option value="{{ vet.usuario.id }}" {% if vet.usuario.id == selected_vet_id %}selected{% endif %}>
+          <option value="{{ vet.usuario.id }}" {% if vet.usuario.id==selected_vet_id %}selected{% endif %}>
             {{ vet }}
           </option>
           {% endfor %}
@@ -93,7 +93,7 @@
               <span class="badge bg-info">{{ cita.get_estado_display }}</span>
               {% elif cita.estado in 'CANCELADA,NO_ASISTIO' %}
               <span class="badge bg-danger">{{ cita.get_estado_display }}</span>
-              {% elif cita.estado == 'FINALIZADA' %}
+              {% elif cita.estado == 'REALIZADO' %}
               <span class="badge bg-success">{{ cita.get_estado_display }}</span>
               {% else %}
               <span class="badge bg-secondary">{{ cita.get_estado_display }}</span>

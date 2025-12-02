@@ -31,7 +31,7 @@ estado_cita_choices = [
     ("AGENDADA", "Agendada"),
     ("CONFIRMADA", "Confirmada"),
     ("EN_CURSO", "En Curso"),
-    ("FINALIZADA", "Finalizada"),
+    ("REALIZADO", "Realizado"),
     ("CANCELADA", "Cancelada"),
     ("NO_ASISTIO", "No Asistió"),
 ]
