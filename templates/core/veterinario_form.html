@@ -1,0 +1,121 @@
+{% extends 'core/panel.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow rounded-3">
+            <div class="card-body p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <i class="bi bi-hospital display-5 text-success mb-3"></i>
+                    <h3 class="card-title">Registrar Nuevo Veterinario</h3>
+                    <p class="text-muted">Crea una cuenta y perfil profesional para un veterinario</p>
+                </div>
+
+                <form method="post" class="mt-4">
+                    {% csrf_token %}
+
+                    <h5 class="mb-3 text-primary border-bottom pb-2">Información de Usuario</h5>
+                    <div class="row g-3 mb-4">
+                        <!-- Información Personal -->
+                        <div class="col-md-6">
+                            <label for="{{ form_usuario.nombre.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-person me-1"></i> Nombre
+                            </label>
+                            {{ form_usuario.nombre }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form_usuario.apellido.id_for_label }}" class="form-label fw-semibold">
+                                Apellido
+                            </label>
+                            {{ form_usuario.apellido }}
+                        </div>
+
+                        <div class="col-12">
+                            <label for="{{ form_usuario.email.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-envelope me-1"></i> Email
+                            </label>
+                            {{ form_usuario.email }}
+                        </div>
+
+                        <!-- Rol oculto o deshabilitado, ya que es Veterinario por defecto -->
+                        <div class="col-md-6 d-none">
+                            {{ form_usuario.rol }}
+                        </div>
+
+                        <div class="col-md-6 d-flex align-items-center">
+                            <div class="form-check form-switch mt-2">
+                                {{ form_usuario.is_active }}
+                                <label class="form-check-label fw-semibold"
+                                    for="{{ form_usuario.is_active.id_for_label }}">
+                                    Usuario Activo
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="{{ form_usuario.password.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-key me-1"></i> Contraseña
+                            </label>
+                            {{ form_usuario.password }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form_usuario.password2.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-key-fill me-1"></i> Confirmar Contraseña
+                            </label>
+                            {{ form_usuario.password2 }}
+                        </div>
+                    </div>
+
+                    <h5 class="mb-3 text-success border-bottom pb-2">Información Profesional</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="{{ form_veterinario.rut.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-card-text me-1"></i> RUT
+                            </label>
+                            {{ form_veterinario.rut }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form_veterinario.telefono.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-telephone me-1"></i> Teléfono
+                            </label>
+                            {{ form_veterinario.telefono }}
+                        </div>
+                        <div class="col-12">
+                            <label for="{{ form_veterinario.especialidad.id_for_label }}"
+                                class="form-label fw-semibold">
+                                <i class="bi bi-award me-1"></i> Especialidad
+                            </label>
+                            {{ form_veterinario.especialidad }}
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top">
+                        <a href="{% url 'gestion_usuarios' %}" class="btn btn-outline-secondary rounded-pill">
+                            <i class="bi bi-arrow-left me-2"></i> Volver al Listado
+                        </a>
+                        <button type="submit" class="btn btn-success rounded-pill px-4">
+                            <i class="bi bi-check-lg me-2"></i> Registrar Veterinario
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control,
+    .form-select {
+        border-radius: 0.75rem;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #198754;
+        /* Green focus for vet form */
+        box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.1);
+    }
+</style>
+{% endblock %}

@@ -217,3 +217,52 @@ class VeterinarioForm(forms.ModelForm):
             'especialidad': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Cirugía, Medicina Interna, etc.'}),
             'telefono': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+56912345678'}),
         }
+
+
+# --- Formulario para Finalizar Cita (Veterinario/Admin) ---
+class CitaFinalizarForm(forms.ModelForm):
+    class Meta:
+        model = Cita
+        fields = ['monto', 'tipo_pago', 'observaciones_veterinario']
+        widgets = {
+            'monto': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Ej: 25000'}),
+            'tipo_pago': forms.Select(attrs={'class': 'form-select'}),
+            'observaciones_veterinario': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Diagnóstico, tratamiento, etc.'}),
+        }
+        labels = {
+            'observaciones_veterinario': 'Observaciones y Diagnóstico'
+        }
+    
+    def clean_monto(self):
+        monto = self.cleaned_data.get('monto')
+        if not monto:
+            raise ValidationError("Debe ingresar el monto de la consulta.")
+        if monto < 0:
+            raise ValidationError("El monto no puede ser negativo.")
+        return monto
+
+    def clean_tipo_pago(self):
+        tipo_pago = self.cleaned_data.get('tipo_pago')
+        if not tipo_pago:
+            raise ValidationError("Debe seleccionar un tipo de pago.")
+        return tipo_pago
+
+
+# --- Formulario de Reportes ---
+class ReporteForm(forms.Form):
+    fecha_inicio = forms.DateField(
+        label="Fecha Inicio",
+        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        required=True
+    )
+    fecha_fin = forms.DateField(
+        label="Fecha Fin",
+        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        required=True
+    )
+    paciente = forms.ModelChoiceField(
+        queryset=Paciente.objects.all(),
+        label="Filtrar por Paciente (Opcional)",
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
