@@ -311,3 +311,30 @@ class AlergiaForm(forms.ModelForm):
             'activa': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'observaciones': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
+
+        
+
+class HorarioMultipleForm(forms.Form):
+    """Formulario para crear horarios en múltiples días a la vez"""
+    dias_semana = forms.MultipleChoiceField(
+        choices=(
+            (0, 'Lunes'),
+            (1, 'Martes'),
+            (2, 'Miércoles'),
+            (3, 'Jueves'),
+            (4, 'Viernes'),
+            (5, 'Sábado'),
+            (6, 'Domingo'),
+        ),
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
+        label='Días de la semana',
+        required=True
+    )
+    hora_inicio = forms.TimeField(
+        widget=forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
+        label='Hora de inicio'
+    )
+    hora_fin = forms.TimeField(
+        widget=forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
+        label='Hora de fin'
+    )
