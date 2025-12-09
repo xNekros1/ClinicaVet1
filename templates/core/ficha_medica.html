@@ -1,0 +1,319 @@
+{% extends 'core/panel.html' %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="mb-1">
+            <i class="bi bi-file-medical me-2 text-primary"></i>
+            Ficha Médica: {{ paciente.nombre }}
+        </h3>
+        <p class="text-muted mb-0">
+            {{ paciente.get_especie_display }} | Tutor: {{ paciente.tutor }}
+        </p>
+    </div>
+    <div>
+        <a href="{% url 'listar_pacientes' %}" class="btn btn-outline-secondary rounded-pill">
+            <i class="bi bi-arrow-left me-2"></i> Volver
+        </a>
+    </div>
+</div>
+
+<!-- Alertas de Alergias Activas -->
+{% if alergias %}
+<div class="alert alert-warning border-0 shadow-sm rounded-3 mb-4" role="alert">
+    <h5 class="alert-heading">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        Alergias y Condiciones Activas
+    </h5>
+    <ul class="mb-0">
+        {% for alergia in alergias %}
+        <li>
+            <strong>{{ alergia.get_tipo_display }}:</strong> {{ alergia.descripcion }}
+            <span class="badge bg-{{ alergia.severidad }}">{{ alergia.get_severidad_display }}</span>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<!-- Pestañas de Navegación -->
+<ul class="nav nav-tabs mb-4" id="fichaTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="resumen-tab" data-bs-toggle="tab" data-bs-target="#resumen" type="button">
+            <i class="bi bi-clipboard-pulse me-2"></i>Resumen
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="consultas-tab" data-bs-toggle="tab" data-bs-target="#consultas" type="button">
+            <i class="bi bi-calendar-check me-2"></i>Consultas
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="vacunas-tab" data-bs-toggle="tab" data-bs-target="#vacunas" type="button">
+            <i class="bi bi-shield-fill-check me-2"></i>Vacunas
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="cirugias-tab" data-bs-toggle="tab" data-bs-target="#cirugias" type="button">
+            <i class="bi bi-bandaid me-2"></i>Cirugías
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="alergias-tab" data-bs-toggle="tab" data-bs-target="#alergias" type="button">
+            <i class="bi bi-exclamation-triangle me-2"></i>Alergias
+        </button>
+    </li>
+</ul>
+
+<!-- Contenido de las Pestañas -->
+<div class="tab-content" id="fichaTabsContent">
+
+    <!-- Tab: Resumen -->
+    <div class="tab-pane fade show active" id="resumen" role="tabpanel">
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm rounded-3">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-info-circle me-2 text-primary"></i>Información del
+                            Paciente</h5>
+                        <table class="table table-sm">
+                            <tr>
+                                <th>Nombre:</th>
+                                <td>{{ paciente.nombre }}</td>
+                            </tr>
+                            <tr>
+                                <th>Especie:</th>
+                                <td>{{ paciente.get_especie_display }}</td>
+                            </tr>
+                            <tr>
+                                <th>Raza:</th>
+                                <td>{{ paciente.raza }}</td>
+                            </tr>
+                            <tr>
+                                <th>Sexo:</th>
+                                <td>{{ paciente.get_sexo_display }}</td>
+                            </tr>
+                            <tr>
+                                <th>Edad:</th>
+                                <td>{% if paciente.fecha_nacimiento %}{{ paciente.fecha_nacimiento|timesince }}{% else
+                                    %}N/A{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <th>Peso:</th>
+                                <td>{% if paciente.peso %}{{ paciente.peso }} kg{% else %}N/A{% endif %}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm rounded-3 mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-shield-check me-2 text-success"></i>Estado de Vacunación
+                        </h5>
+                        {% if vacunas_pendientes %}
+                        <div class="alert alert-danger mb-0">
+                            <strong>¡Atención!</strong> {{ vacunas_pendientes.count }} vacuna(s) vencida(s)
+                        </div>
+                        {% else %}
+                        <div class="alert alert-success mb-0">
+                            Vacunación al día ✓
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card border-0 shadow-sm rounded-3">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-graph-up me-2 text-info"></i>Estadísticas</h5>
+                        <ul class="list-unstyled mb-0">
+                            <li>✓ Consultas: {{ historial_consultas.count }}</li>
+                            <li>✓ Vacunas: {{ vacunas.count }}</li>
+                            <li>✓ Cirugías: {{ cirugias.count }}</li>
+                            <li>✓ Alergias activas: {{ alergias.count }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab: Historial de Consultas -->
+    <div class="tab-pane fade" id="consultas" role="tabpanel">
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-body">
+                {% if historial_consultas %}
+                <div class="timeline">
+                    {% for consulta in historial_consultas %}
+                    <div class="card mb-3 border-start border-primary border-4">
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                {{ consulta.fecha_atencion|date:"d/m/Y H:i" }} - Dr(a). {{ consulta.veterinario }}
+                            </h6>
+                            <p class="mb-2"><strong>Motivo:</strong> {{ consulta.motivo }}</p>
+                            <p class="mb-2"><strong>Diagnóstico:</strong> {{ consulta.diagnostico }}</p>
+                            <p class="mb-0"><strong>Tratamiento:</strong> {{ consulta.tratamiento }}</p>
+                            {% if consulta.notas %}
+                            <p class="text-muted small mt-2">{{ consulta.notas }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-center text-muted py-5">No hay consultas registradas</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab: Vacunas -->
+    <div class="tab-pane fade" id="vacunas" role="tabpanel">
+        <div class="mb-3 text-end">
+            <a href="{% url 'agregar_vacuna' paciente.id %}" class="btn btn-primary rounded-pill">
+                <i class="bi bi-plus-circle me-2"></i>Registrar Vacuna
+            </a>
+        </div>
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-body p-0">
+                {% if vacunas %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Vacuna</th>
+                                <th>Fecha Aplicación</th>
+                                <th>Próxima Dosis</th>
+                                <th>Veterinario</th>
+                                <th>Lote</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for vacuna in vacunas %}
+                            <tr>
+                                <td><strong>{{ vacuna.nombre_vacuna }}</strong></td>
+                                <td>{{ vacuna.fecha_aplicacion|date:"d/m/Y" }}</td>
+                                <td>
+                                    {% if vacuna.proxima_dosis %}
+                                    {{ vacuna.proxima_dosis|date:"d/m/Y" }}
+                                    {% if vacuna.proxima_dosis < today %} <span class="badge bg-danger">Vencida</span>
+                                        {% endif %}
+                                        {% else %}
+                                        N/A
+                                        {% endif %}
+                                </td>
+                                <td>{{ vacuna.veterinario }}</td>
+                                <td>{{ vacuna.lote|default:"N/A" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-center text-muted py-5">No hay vacunas registradas</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab: Cirugías -->
+    <div class="tab-pane fade" id="cirugias" role="tabpanel">
+        <div class="mb-3 text-end">
+            <a href="{% url 'agregar_cirugia' paciente.id %}" class="btn btn-primary rounded-pill">
+                <i class="bi bi-plus-circle me-2"></i>Registrar Cirugía
+            </a>
+        </div>
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-body">
+                {% if cirugias %}
+                {% for cirugia in cirugias %}
+                <div class="card mb-3 border-0 bg-light">
+                    <div class="card-body">
+                        <h6 class="card-title">
+                            {{ cirugia.tipo_cirugia }} - {{ cirugia.fecha_cirugia|date:"d/m/Y" }}
+                        </h6>
+                        <p class="mb-2"><strong>Veterinario:</strong> {{ cirugia.veterinario }}</p>
+                        <p class="mb-2"><strong>Descripción:</strong> {{ cirugia.descripcion }}</p>
+                        {% if cirugia.complicaciones %}
+                        <p class="mb-2"><strong>Complicaciones:</strong> {{ cirugia.complicaciones }}</p>
+                        {% endif %}
+                        <p class="mb-0"><strong>Costo:</strong> ${{ cirugia.costo }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <p class="text-center text-muted py-5">No hay cirugías registradas</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab: Alergias y Condiciones -->
+    <div class="tab-pane fade" id="alergias" role="tabpanel">
+        <div class="mb-3 text-end">
+            <a href="{% url 'agregar_alergia' paciente.id %}" class="btn btn-primary rounded-pill">
+                <i class="bi bi-plus-circle me-2"></i>Registrar Alergia/Condición
+            </a>
+        </div>
+
+        <h5 class="mb-3">Condiciones Activas</h5>
+        <div class="card border-0 shadow-sm rounded-3 mb-4">
+            <div class="card-body">
+                {% if alergias %}
+                {% for alergia in alergias %}
+                <div class="card mb-3 border-start border-danger border-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="card-title">
+                                    {{ alergia.get_tipo_display }}
+                                    <span class="badge bg-{{ alergia.severidad }}">{{ alergia.get_severidad_display
+                                        }}</span>
+                                </h6>
+                                <p class="mb-2">{{ alergia.descripcion }}</p>
+                                <p class="text-muted small mb-0">Detectada: {{ alergia.fecha_deteccion|date:"d/m/Y" }}
+                                </p>
+                            </div>
+                            <a href="{% url 'toggle_alergia' alergia.id %}"
+                                class="btn btn-sm btn-outline-secondary rounded-pill">
+                                Marcar como Inactiva
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <p class="text-center text-muted py-3">No hay condiciones activas</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <h5 class="mb-3">Historial de Condiciones Inactivas</h5>
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-body">
+                {% if alergias_inactivas %}
+                {% for alergia in alergias_inactivas %}
+                <div class="card mb-2 bg-light">
+                    <div class="card-body py-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ alergia.get_tipo_display }}:</strong> {{ alergia.descripcion }}
+                                <span class="badge bg-secondary">Inactiva</span>
+                            </div>
+                            <a href="{% url 'toggle_alergia' alergia.id %}"
+                                class="btn btn-sm btn-outline-primary rounded-pill">
+                                Reactivar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <p class="text-center text-muted py-3">No hay condiciones inactivas</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

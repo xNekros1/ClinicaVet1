@@ -1,0 +1,85 @@
+{% extends 'core/panel.html' %}
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow rounded-3">
+            <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    <i class="bi bi-bandaid display-5 text-primary mb-3"></i>
+                    <h3 class="card-title">{{ titulo }}</h3>
+                    <p class="text-muted">Paciente: {{ paciente.nombre }}</p>
+                </div>
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="{{ form.tipo_cirugia.id_for_label }}" class="form-label">Tipo de Cirugía</label>
+                        {{ form.tipo_cirugia }}
+                        {% if form.tipo_cirugia.errors %}
+                        <div class="text-danger">{{ form.tipo_cirugia.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.fecha_cirugia.id_for_label }}" class="form-label">Fecha de la
+                                Cirugía</label>
+                            {{ form.fecha_cirugia }}
+                            {% if form.fecha_cirugia.errors %}
+                            <div class="text-danger">{{ form.fecha_cirugia.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.veterinario.id_for_label }}" class="form-label">Veterinario</label>
+                            {{ form.veterinario }}
+                            {% if form.veterinario.errors %}
+                            <div class="text-danger">{{ form.veterinario.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.descripcion.id_for_label }}" class="form-label">Descripción del
+                            Procedimiento</label>
+                        {{ form.descripcion }}
+                        {% if form.descripcion.errors %}
+                        <div class="text-danger">{{ form.descripcion.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.complicaciones.id_for_label }}" class="form-label">Complicaciones
+                            (Opcional)</label>
+                        {{ form.complicaciones }}
+                        {% if form.complicaciones.errors %}
+                        <div class="text-danger">{{ form.complicaciones.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.costo.id_for_label }}" class="form-label">Costo</label>
+                        {{ form.costo }}
+                        {% if form.costo.errors %}
+                        <div class="text-danger">{{ form.costo.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="text-center mt-4 pt-3 border-top">
+                        <a href="{% url 'ficha_medica' paciente.id %}"
+                            class="btn btn-outline-secondary rounded-pill px-4 me-2">
+                            <i class="bi bi-x-lg me-2"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4">
+                            <i class="bi bi-check-lg me-2"></i>Guardar Cirugía
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
