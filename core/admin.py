@@ -6,7 +6,8 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from .models import (
     Usuario, Veterinario, Tutor, Paciente,
-    Cita, HistorialClinico, HorarioDisponible
+    Cita, HistorialClinico, HorarioDisponible,
+    Vacuna, Cirugia, Alergia
 )
 
 # ===============================================================
@@ -128,3 +129,23 @@ class HistorialClinicoAdmin(admin.ModelAdmin):
 class HorarioDisponibleAdmin(admin.ModelAdmin):
     list_display = ('veterinario', 'get_dia_semana_display', 'hora_inicio', 'hora_fin')
     list_filter = ('veterinario', 'dia_semana')
+
+@admin.register(Vacuna)
+class VacunaAdmin(admin.ModelAdmin):
+    list_display = ('paciente', 'nombre_vacuna', 'fecha_aplicacion', 'proxima_dosis', 'veterinario')
+    list_filter = ('nombre_vacuna', 'fecha_aplicacion')
+    search_fields = ('paciente__nombre', 'nombre_vacuna')
+    date_hierarchy = 'fecha_aplicacion'
+
+@admin.register(Cirugia)
+class CirugiaAdmin(admin.ModelAdmin):
+    list_display = ('paciente', 'tipo_cirugia', 'fecha_cirugia', 'veterinario', 'costo')
+    list_filter = ('tipo_cirugia', 'fecha_cirugia')
+    search_fields = ('paciente__nombre', 'tipo_cirugia')
+    date_hierarchy = 'fecha_cirugia'
+
+@admin.register(Alergia)
+class AlergiaAdmin(admin.ModelAdmin):
+    list_display = ('paciente', 'tipo', 'descripcion', 'severidad', 'activa')
+    list_filter = ('tipo', 'severidad', 'activa')
+    search_fields = ('paciente__nombre', 'descripcion')

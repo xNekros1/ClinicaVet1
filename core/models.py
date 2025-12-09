@@ -238,3 +238,149 @@ class HorarioDisponible(models.Model):
         for horario in horarios_existentes:
             if max(self.hora_inicio, horario.hora_inicio) < min(self.hora_fin, horario.hora_fin):
                 raise ValidationError(f"Este horario se solapa con un bloque existente ({horario.hora_inicio.strftime('%H:%M')} - {horario.hora_fin.strftime('%H:%M')}).")
+
+# ============================================================================
+# MODELO: VACUNA
+# ============================================================================
+class Vacuna(models.Model):
+    paciente = models.ForeignKey(
+        Paciente, 
+        on_delete=models.CASCADE, 
+        related_name="vacunas",
+        help_text="Mascota vacunada"
+    )
+    nombre_vacuna = models.CharField(
+        max_length=100, 
+        help_text="Nombre de la vacuna (ej: Rabia, Parvovirus, Triple Felina)"
+    )
+    fecha_aplicacion = models.DateField(help_text="Fecha en que se aplicó la vacuna")
+    proxima_dosis = models.DateField(
+        null=True, 
+        blank=True, 
+        help_text="Fecha programada para la próxima dosis (si aplica)"
+    )
+    lote = models.CharField(
+        max_length=50, 
+        blank=True, 
+        help_text="Número de lote de la vacuna"
+    )
+    veterinario = models.ForeignKey(
+        Veterinario, 
+        on_delete=models.PROTECT, 
+        help_text="Veterinario que aplicó la vacuna"
+    )
+    observaciones = models.TextField(
+        blank=True, 
+        help_text="Observaciones adicionales sobre la vacunación"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-fecha_aplicacion']
+        verbose_name = "Vacuna"
+        verbose_name_plural = "Vacunas"
+
+    def __str__(self):
+        return f"{self.nombre_vacuna} - {self.paciente.nombre} ({self.fecha_aplicacion})"
+
+# ============================================================================
+# MODELO: CIRUGIA
+# ============================================================================
+class Cirugia(models.Model):
+    paciente = models.ForeignKey(
+        Paciente, 
+        on_delete=models.CASCADE, 
+        related_name="cirugias",
+        help_text="Mascota operada"
+    )
+    tipo_cirugia = models.CharField(
+        max_length=150, 
+        help_text="Tipo de cirugía (ej: Esterilización, Extracción dental, Cesárea)"
+    )
+    fecha_cirugia = models.DateField(help_text="Fecha en que se realizó la cirugía")
+    veterinario = models.ForeignKey(
+        Veterinario, 
+        on_delete=models.PROTECT, 
+        help_text="Veterinario que realizó la cirugía"
+    )
+    descripcion = models.TextField(help_text="Descripción detallada del procedimiento")
+    complicaciones = models.TextField(
+        blank=True, 
+        help_text="Complicaciones observadas durante o después de la cirugía"
+    )
+    costo = models.DecimalField(
+        max_digits=10, 
+        decimal_places=0, 
+        help_text="Costo de la cirugía"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-fecha_cirugia']
+        verbose_name = "Cirugía"
+        verbose_name_plural = "Cirugías"
+
+    def __str__(self):
+        return f"{self.tipo_cirugia} - {self.paciente.nombre} ({self.fecha_cirugia})"
+
+# ============================================================================
+# MODELO: ALERGIA/CONDICION
+# ============================================================================
+class Alergia(models.Model):
+    TIPO_CHOICES = [
+        ('ALERGIA', 'Alergia'),
+        ('CONDICION_CRONICA', 'Condición Crónica'),
+        ('MEDICAMENTO_PROHIBIDO', 'Medicamento Prohibido'),
+        ('OTRO', 'Otro'),
+    ]
+    SEVERIDAD_CHOICES = [
+        ('LEVE', 'Leve'),
+        ('MODERADA', 'Moderada'),
+        ('GRAVE', 'Grave'),
+    ]
+
+    paciente = models.ForeignKey(
+        Paciente, 
+        on_delete=models.CASCADE, 
+        related_name="alergias",
+        help_text="Mascota con la condición/alergia"
+    )
+    tipo = models.CharField(
+        max_length=30, 
+        choices=TIPO_CHOICES, 
+        default='ALERGIA',
+        help_text="Tipo de condición"
+    )
+    descripcion = models.TextField(
+        help_text="Descripción detallada de la alergia o condición"
+    )
+    severidad = models.CharField(
+        max_length=15, 
+        choices=SEVERIDAD_CHOICES, 
+        default='MODERADA',
+        help_text="Nivel de severidad"
+    )
+    fecha_deteccion = models.DateField(
+        help_text="Fecha en que se detectó la condición"
+    )
+    activa = models.BooleanField(
+        default=True, 
+        help_text="Indica si la condición sigue activa"
+    )
+    observaciones = models.TextField(
+        blank=True, 
+        help_text="Observaciones adicionales"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-activa', '-severidad', '-fecha_deteccion']
+        verbose_name = "Alergia/Condición"
+        verbose_name_plural = "Alergias/Condiciones"
+
+    def __str__(self):
+        estado = "Activa" if self.activa else "Inactiva"
+        return f"{self.get_tipo_display()} - {self.paciente.nombre} ({estado})"

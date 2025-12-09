@@ -266,3 +266,48 @@ class ReporteForm(forms.Form):
         required=False,
         widget=forms.Select(attrs={'class': 'form-select'})
     )
+
+# ============================================================================
+# FORMS PARA FICHA MÉDICA
+# ============================================================================
+
+from .models import Vacuna, Cirugia, Alergia
+
+class VacunaForm(forms.ModelForm):
+    class Meta:
+        model = Vacuna
+        fields = ['nombre_vacuna', 'fecha_aplicacion', 'proxima_dosis', 'lote', 'veterinario', 'observaciones']
+        widgets = {
+            'nombre_vacuna': forms.TextInput(attrs={'class': 'form-control'}),
+            'fecha_aplicacion': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'proxima_dosis': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'lote': forms.TextInput(attrs={'class': 'form-control'}),
+            'veterinario': forms.Select(attrs={'class': 'form-select'}),
+            'observaciones': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
+
+class CirugiaForm(forms.ModelForm):
+    class Meta:
+        model = Cirugia
+        fields = ['tipo_cirugia', 'fecha_cirugia', 'veterinario', 'descripcion', 'complicaciones', 'costo']
+        widgets = {
+            'tipo_cirugia': forms.TextInput(attrs={'class': 'form-control'}),
+            'fecha_cirugia': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'veterinario': forms.Select(attrs={'class': 'form-select'}),
+            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+            'complicaciones': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'costo': forms.NumberInput(attrs={'class': 'form-control'}),
+        }
+
+class AlergiaForm(forms.ModelForm):
+    class Meta:
+        model = Alergia
+        fields = ['tipo', 'descripcion', 'severidad', 'fecha_deteccion', 'activa', 'observaciones']
+        widgets = {
+            'tipo': forms.Select(attrs={'class': 'form-select'}),
+            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'severidad': forms.Select(attrs={'class': 'form-select'}),
+            'fecha_deteccion': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'activa': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'observaciones': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }

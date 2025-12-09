@@ -13,8 +13,15 @@ from django.core.exceptions import ValidationError
 from django.views.decorators.http import require_POST
 
 # Importamos todos los Modelos y Forms que usaremos
-from .models import Usuario, Cita, Tutor, Paciente, Veterinario, HorarioDisponible
-from .forms import CitaForm, TutorForm, PacienteForm, HorarioForm, PersonalForm, VeterinarioForm, CitaFinalizarForm, ReporteForm
+from .models import (
+    Usuario, Cita, Tutor, Paciente, Veterinario, HorarioDisponible,
+    HistorialClinico, Vacuna, Cirugia, Alergia
+)
+from .forms import (
+    CitaForm, TutorForm, PacienteForm, HorarioForm, PersonalForm,
+    VeterinarioForm, CitaFinalizarForm, ReporteForm,
+    VacunaForm, CirugiaForm, AlergiaForm
+)
 
 # -----------------------------------------------------------------
 # VISTAS DE AUTENTICACIÓN
