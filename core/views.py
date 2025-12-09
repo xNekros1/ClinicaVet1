@@ -20,7 +20,7 @@ from .models import (
 from .forms import (
     CitaForm, TutorForm, PacienteForm, HorarioForm, PersonalForm,
     VeterinarioForm, CitaFinalizarForm, ReporteForm,
-    VacunaForm, CirugiaForm, AlergiaForm
+    VacunaForm, CirugiaForm, AlergiaForm, HorarioMultipleForm
 )
 
 # -----------------------------------------------------------------
