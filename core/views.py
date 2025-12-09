@@ -282,18 +282,43 @@ def gestionar_horarios(request, vet_id):
     veterinario = get_object_or_404(Veterinario, pk=vet_id)
     
     if request.method == 'POST':
-        form = HorarioForm(request.POST)
+        form = HorarioMultipleForm(request.POST)
         if form.is_valid():
-            try:
-                horario = form.save(commit=False)
-                horario.veterinario = veterinario 
-                horario.clean() 
-                horario.save()
-                return redirect('gestionar_horarios', vet_id=vet_id)
-            except ValidationError as e:
-                form.add_error(None, e)
+            dias_seleccionados = form.cleaned_data['dias_semana']
+            hora_inicio = form.cleaned_data['hora_inicio']
+            hora_fin = form.cleaned_data['hora_fin']
+            
+            creados = 0
+            errores = []
+            
+            for dia in dias_seleccionados:
+                horario = HorarioDisponible(
+                    veterinario=veterinario,
+                    dia_semana=int(dia),
+                    hora_inicio=hora_inicio,
+                    hora_fin=hora_fin
+                )
+                try:
+                    horario.full_clean()
+                    horario.save()
+                    creados += 1
+                except ValidationError as e:
+                    # Nombre del día
+                    dias_nombres = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
+                    dia_nombre = dias_nombres[int(dia)]
+                    errores.append(f"{dia_nombre}: {', '.join(e.messages)}")
+            
+            if creados > 0:
+                from django.contrib import messages
+                messages.success(request, f"✓ Se crearon {creados} horario(s) correctamente")
+            if errores:
+                from django.contrib import messages
+                for error in errores:
+                    messages.warning(request, f"⚠ {error}")
+            
+            return redirect('gestionar_horarios', vet_id=vet_id)
     else:
-        form = HorarioForm()
+        form = HorarioMultipleForm()
 
     horarios_existentes = HorarioDisponible.objects.filter(veterinario=veterinario)
     context = {
