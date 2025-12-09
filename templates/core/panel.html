@@ -190,6 +190,30 @@
         </div>
       </div>
 
+      <!-- Gráficos de Analytics -->
+      <div class="row g-4 mb-4">
+        <div class="col-lg-6">
+          <div class="card border-0 shadow rounded-3">
+            <div class="card-header bg-transparent border-bottom">
+              <h5 class="mb-0"><i class="bi bi-graph-up me-2 text-success"></i>Ingresos Mensuales</h5>
+            </div>
+            <div class="card-body">
+              <canvas id="ingresosChart"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="card border-0 shadow rounded-3">
+            <div class="card-header bg-transparent border-bottom">
+              <h5 class="mb-0"><i class="bi bi-calendar3 me-2 text-primary"></i>Tendencia de Citas</h5>
+            </div>
+            <div class="card-body">
+              <canvas id="citasChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {% block content %}
       <!-- Aquí va el contenido específico de cada página -->
       {% endblock %}
@@ -211,4 +235,5 @@
     });
   });
 </script>
+<script src="{% static 'js/dashboard-charts.js' %}"></script>
 {% endblock %}

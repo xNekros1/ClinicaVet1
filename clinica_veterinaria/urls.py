@@ -51,9 +51,20 @@ from core.views import (
     crear_usuario,
     crear_veterinario,
 
-    # Vistas de Citas Actuales
+        # Vistas de Citas Actuales
     listar_citas_actuales,
     finalizar_cita,
+    
+    # Vistas de Ficha Médica
+    ficha_medica_paciente,
+    agregar_vacuna,
+    agregar_cirugia,
+    agregar_alergia,
+    toggle_alergia,
+    
+    # API Endpoints
+    dashboard_data,
+
 )
 
 urlpatterns = [
@@ -96,6 +107,15 @@ urlpatterns = [
     # --- Rutas de Gestión de Personal ---
     path('personal/', gestionar_personal, name='gestionar_personal'),
     path('personal/eliminar/<int:pk>/', eliminar_personal, name='eliminar_personal'),
+
+
+
+    # --- Rutas de Ficha Médica ---
+    path('paciente/<int:paciente_id>/ficha/', ficha_medica_paciente, name='ficha_medica'),
+    path('paciente/<int:paciente_id>/vacuna/agregar/', agregar_vacuna, name='agregar_vacuna'),
+    path('paciente/<int:paciente_id>/cirugia/agregar/', agregar_cirugia, name='agregar_cirugia'),
+    path('paciente/<int:paciente_id>/alergia/agregar/', agregar_alergia, name='agregar_alergia'),
+    path('alergia/<int:alergia_id>/toggle/', toggle_alergia, name='toggle_alergia'),
     
     # --- Rutas de Historial Clínico ---
     # path('historiales/', listar_historiales, name='listar_historiales'),
@@ -117,4 +137,19 @@ urlpatterns = [
     # --- Rutas de Citas Actuales ---
     path('citas-actuales/', listar_citas_actuales, name='listar_citas_actuales'),
     path('citas-actuales/finalizar/<int:pk>/', finalizar_cita, name='finalizar_cita'),
+
+        # --- Rutas de Citas Actuales ---
+    path('citas-actuales/', listar_citas_actuales, name='listar_citas_actuales'),
+    path('citas-actuales/finalizar/<int:pk>/', finalizar_cita, name='finalizar_cita'),
+    
+    # --- Rutas de Ficha Médica ---
+    path('paciente/<int:paciente_id>/ficha/', ficha_medica_paciente, name='ficha_medica'),
+    path('paciente/<int:paciente_id>/vacuna/agregar/', agregar_vacuna, name='agregar_vacuna'),
+    path('paciente/<int:paciente_id>/cirugia/agregar/', agregar_cirugia, name='agregar_cirugia'),
+    path('paciente/<int:paciente_id>/alergia/agregar/', agregar_alergia, name='agregar_alergia'),
+    path('alergia/<int:alergia_id>/toggle/', toggle_alergia, name='toggle_alergia'),
+    
+    # --- API Dashboard ---
+    path('api/dashboard-data/', dashboard_data, name='dashboard_data'),
+
 ]
