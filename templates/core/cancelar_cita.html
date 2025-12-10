@@ -1,0 +1,44 @@
+{% extends 'core/panel.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="mb-1">Cancelar Cita</h3>
+                    <p class="text-muted mb-0">¿Está seguro?</p>
+                </div>
+                <a href="{% url 'listar_citas_actuales' %}" class="btn btn-outline-secondary rounded-pill">
+                    <i class="bi bi-arrow-left me-2"></i> Volver
+                </a>
+            </div>
+
+            <div class="card border-0 shadow rounded-3">
+                <div class="card-body p-4">
+                    <div class="alert alert-warning rounded-3">
+                        <strong>Paciente:</strong> {{ cita.paciente.nombre }}<br>
+                        <strong>Fecha:</strong> {{ cita.fecha_hora|date:"d/m/Y H:i" }}<br>
+                        <strong>Tutor:</strong> {{ cita.paciente.tutor.nombre }}
+                    </div>
+
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Motivo de Cancelación</label>
+                            {{ form.motivo_cancelacion }}
+                            {% if form.motivo_cancelacion.errors %}
+                            <div class="text-danger small">{{ form.motivo_cancelacion.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <button type="submit" class="btn btn-danger w-100 rounded-pill">
+                            <i class="bi bi-x-circle me-2"></i> Confirmar Cancelación
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

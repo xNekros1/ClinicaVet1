@@ -54,6 +54,7 @@ from core.views import (
         # Vistas de Citas Actuales
     listar_citas_actuales,
     finalizar_cita,
+    cancelar_cita,
     
     # Vistas de Ficha Médica
     ficha_medica_paciente,
@@ -61,6 +62,10 @@ from core.views import (
     agregar_cirugia,
     agregar_alergia,
     toggle_alergia,
+    
+    # Vistas de Pagos
+    cuentas_por_cobrar,
+    registrar_abono,
     
     # API Endpoints
     dashboard_data,
@@ -140,7 +145,8 @@ urlpatterns = [
 
         # --- Rutas de Citas Actuales ---
     path('citas-actuales/', listar_citas_actuales, name='listar_citas_actuales'),
-    path('citas-actuales/finalizar/<int:pk>/', finalizar_cita, name='finalizar_cita'),
+    path('citas/<int:cita_id>/finalizar/', finalizar_cita, name='finalizar_cita'),
+    path('citas/<int:cita_id>/cancelar/', cancelar_cita, name='cancelar_cita'),
     
     # --- Rutas de Ficha Médica ---
     path('paciente/<int:paciente_id>/ficha/', ficha_medica_paciente, name='ficha_medica'),
@@ -148,6 +154,10 @@ urlpatterns = [
     path('paciente/<int:paciente_id>/cirugia/agregar/', agregar_cirugia, name='agregar_cirugia'),
     path('paciente/<int:paciente_id>/alergia/agregar/', agregar_alergia, name='agregar_alergia'),
     path('alergia/<int:alergia_id>/toggle/', toggle_alergia, name='toggle_alergia'),
+    
+    # --- Rutas de Pagos ---
+    path('pagos/cuentas-por-cobrar/', cuentas_por_cobrar, name='cuentas_por_cobrar'),
+    path('pagos/<int:pago_id>/abono/', registrar_abono, name='registrar_abono'),
     
     # --- API Dashboard ---
     path('api/dashboard-data/', dashboard_data, name='dashboard_data'),

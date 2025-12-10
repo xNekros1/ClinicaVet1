@@ -7,7 +7,7 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from .models import (
     Usuario, Veterinario, Tutor, Paciente,
     Cita, HistorialClinico, HorarioDisponible,
-    Vacuna, Cirugia, Alergia
+    Vacuna, Cirugia, Alergia, Pago, Abono
 )
 
 # ===============================================================
@@ -149,3 +149,18 @@ class AlergiaAdmin(admin.ModelAdmin):
     list_display = ('paciente', 'tipo', 'descripcion', 'severidad', 'activa')
     list_filter = ('tipo', 'severidad', 'activa')
     search_fields = ('paciente__nombre', 'descripcion')
+
+
+@admin.register(Pago)
+class PagoAdmin(admin.ModelAdmin):
+    list_display = ['id', 'cita', 'monto_total', 'monto_pagado', 'saldo_pendiente', 'estado', 'created_at']
+    list_filter = ['estado', 'created_at']
+    search_fields = ['cita__paciente__nombre']
+    readonly_fields = ['created_at', 'updated_at']
+
+@admin.register(Abono)
+class AbonoAdmin(admin.ModelAdmin):
+    list_display = ['id', 'pago', 'monto', 'metodo_pago', 'fecha', 'registrado_por']
+    list_filter = ['metodo_pago', 'fecha']
+    search_fields = ['pago__cita__paciente__nombre']
+    readonly_fields = ['fecha']

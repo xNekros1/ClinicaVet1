@@ -1,0 +1,68 @@
+{% extends 'core/panel.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="mb-1">Cuentas por Cobrar</h3>
+        <p class="text-muted mb-0">Pagos pendientes y parciales</p>
+    </div>
+    <div>
+        <h4 class="text-danger mb-0">Total Adeudado: ${{ total_adeudado|floatformat:0 }}</h4>
+    </div>
+</div>
+
+<div class="card border-0 shadow rounded-3">
+    <div class="card-body p-0">
+        {% if not pagos %}
+        <div class="text-center py-5">
+            <i class="bi bi-check-circle display-4 text-success d-block mb-3"></i>
+            <h5>No hay deudas pendientes</h5>
+            <p class="text-muted">Todos los pagos están al día</p>
+        </div>
+        {% else %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Cita</th>
+                        <th>Paciente</th>
+                        <th>Tutor</th>
+                        <th>Total</th>
+                        <th>Pagado</th>
+                        <th>Saldo</th>
+                        <th>Estado</th>
+                        <th class="text-end pe-4">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pago in pagos %}
+                    <tr>
+                        <td class="ps-4">
+                            <small class="text-muted">{{ pago.cita.fecha_hora|date:"d/m/Y" }}</small><br>
+                            {{ pago.cita.paciente.nombre }}
+                        </td>
+                        <td>{{ pago.cita.paciente.nombre }}</td>
+                        <td>{{ pago.cita.tutor.nombre }}</td>
+                        <td class="fw-bold">${{ pago.monto_total|floatformat:0 }}</td>
+                        <td class="text-success">${{ pago.monto_pagado|floatformat:0 }}</td>
+                        <td class="text-danger fw-bold">${{ pago.saldo_pendiente|floatformat:0 }}</td>
+                        <td>
+                            {% if pago.estado == 'PENDIENTE' %}
+                            <span class="badge bg-danger rounded-pill">Pendiente</span>
+                            {% elif pago.estado == 'PARCIAL' %}
+                            <span class="badge bg-warning text-dark rounded-pill">Parcial</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end pe-4">
+                            <a href="{% url 'registrar_abono' pago.id %}" class="btn btn-sm btn-primary rounded-pill">
+                                <i class="bi bi-cash me-1"></i> Registrar Abono
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

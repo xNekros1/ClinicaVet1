@@ -384,3 +384,54 @@ class Alergia(models.Model):
     def __str__(self):
         estado = "Activa" if self.activa else "Inactiva"
         return f"{self.get_tipo_display()} - {self.paciente.nombre} ({estado})"
+
+# ============================================================================
+# MODELO: PAGOS Y ABONOS
+# ============================================================================
+
+class Pago(models.Model):
+    """Registro de pago asociado a una cita"""
+    cita = models.OneToOneField(Cita, on_delete=models.CASCADE, related_name='pago', help_text='Cita asociada al pago')
+    monto_total = models.DecimalField(max_digits=10, decimal_places=0, help_text='Monto total a pagar')
+    monto_pagado = models.DecimalField(max_digits=10, decimal_places=0, default=0, help_text='Monto ya pagado')
+    saldo_pendiente = models.DecimalField(max_digits=10, decimal_places=0, help_text='Saldo restante')
+    
+    ESTADO_PAGO_CHOICES = [
+        ('PENDIENTE', 'Pendiente'),
+        ('PARCIAL', 'Pago Parcial'),
+        ('PAGADO', 'Pagado'),
+    ]
+    estado = models.CharField(max_length=20, choices=ESTADO_PAGO_CHOICES, default='PENDIENTE', help_text='Estado del pago')
+    
+    METODO_PAGO_CHOICES = [
+        ('EFECTIVO', 'Efectivo'),
+        ('DEBITO', 'Débito'),
+        ('CREDITO', 'Crédito'),
+        ('TRANSFERENCIA', 'Transferencia'),
+    ]
+    metodo_pago_principal = models.CharField(max_length=20, choices=METODO_PAGO_CHOICES, null=True, blank=True, help_text='Método de pago principal')
+    fecha_pago_completo = models.DateTimeField(null=True, blank=True, help_text='Fecha en que se completó el pago')
+    notas = models.TextField(blank=True, help_text='Notas adicionales sobre el pago')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f'Pago - {self.cita.paciente.nombre}: ${self.monto_total} ({self.estado})'
+    
+    class Meta:
+        ordering = ['-created_at']
+
+class Abono(models.Model):
+    """Registro individual de un abono realizado a un pago"""
+    pago = models.ForeignKey(Pago, on_delete=models.CASCADE, related_name='abonos', help_text='Pago al que pertenece este abono')
+    monto = models.DecimalField(max_digits=10, decimal_places=0, help_text='Monto del abono')
+    metodo_pago = models.CharField(max_length=20, choices=Pago.METODO_PAGO_CHOICES, help_text='Método de pago utilizado')
+    fecha = models.DateTimeField(auto_now_add=True, help_text='Fecha del abono')
+    registrado_por = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, related_name='abonos_registrados', help_text='Usuario que registró el abono')
+    notas = models.TextField(blank=True, help_text='Notas sobre este abono')
+    
+    def __str__(self):
+        return f'Abono ${self.monto} - {self.pago.cita.paciente.nombre} ({self.fecha.strftime("%d/%m/%Y")})'
+    
+    class Meta:
+        ordering = ['-fecha']

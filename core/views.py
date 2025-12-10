@@ -15,12 +15,13 @@ from django.views.decorators.http import require_POST
 # Importamos todos los Modelos y Forms que usaremos
 from .models import (
     Usuario, Cita, Tutor, Paciente, Veterinario, HorarioDisponible,
-    HistorialClinico, Vacuna, Cirugia, Alergia
+    HistorialClinico, Vacuna, Cirugia, Alergia, Pago, Abono
 )
 from .forms import (
     CitaForm, TutorForm, PacienteForm, HorarioForm, PersonalForm,
     VeterinarioForm, CitaFinalizarForm, ReporteForm,
-    VacunaForm, CirugiaForm, AlergiaForm, HorarioMultipleForm
+    VacunaForm, CirugiaForm, AlergiaForm, HorarioMultipleForm,
+    CancelarCitaForm, AbonoForm
 )
 
 # -----------------------------------------------------------------
@@ -705,3 +706,150 @@ def toggle_alergia(request, alergia_id):
     alergia.activa = not alergia.activa
     alergia.save()
     return redirect('ficha_medica', paciente_id=alergia.paciente.id)
+
+
+# ============================================================================
+# VISTAS: GESTIÓN DE PAGOS Y ESTADOS DE CITAS
+# ============================================================================
+
+@login_required(login_url='login')
+def finalizar_cita(request, cita_id):
+    """Finalizar una cita y registrar pago"""
+    cita = get_object_or_404(Cita, id=cita_id)
+    
+    # Solo veterinarios y admin pueden finalizar
+    if request.user.rol not in ['VETERINARIO', 'ADMIN']:
+        return redirect('panel')
+    
+    if request.method == 'POST':
+        form = CitaFinalizarForm(request.POST)
+        if form.is_valid():
+            # Actualizar cita
+            cita.estado = 'REALIZADO'
+            cita.monto = form.cleaned_data['monto']
+            cita.observaciones_veterinario = form.cleaned_data['observaciones']
+            cita.save()
+            
+            # Crear registro de pago
+            pago_inmediato = form.cleaned_data.get('pago_inmediato', False)
+            monto = form.cleaned_data['monto']
+            metodo = form.cleaned_data.get('metodo_pago')
+            
+            pago = Pago.objects.create(
+                cita=cita,
+                monto_total=monto,
+                monto_pagado=monto if pago_inmediato else 0,
+                saldo_pendiente=0 if pago_inmediato else monto,
+                estado='PAGADO' if pago_inmediato else 'PENDIENTE',
+                metodo_pago_principal=metodo if pago_inmediato else None,
+                fecha_pago_completo=timezone.now() if pago_inmediato else None
+            )
+            
+            # Si pagó inmediatamente, crear abono
+            if pago_inmediato and metodo:
+                Abono.objects.create(
+                    pago=pago,
+                    monto=monto,
+                    metodo_pago=metodo,
+                    registrado_por=request.user
+                )
+            
+            from django.contrib import messages
+            messages.success(request, f'Cita finalizada exitosamente. Estado de pago: {pago.get_estado_display()}')
+            return redirect('citas_actuales')
+    else:
+        form = CitaFinalizarForm()
+    
+    return render(request, 'core/finalizar_cita.html', {
+        'form': form,
+        'cita': cita
+    })
+
+@login_required(login_url='login')
+def cancelar_cita(request, cita_id):
+    """Cancelar una cita"""
+    cita = get_object_or_404(Cita, id=cita_id)
+    
+    if request.method == 'POST':
+        form = CancelarCitaForm(request.POST)
+        if form.is_valid():
+            cita.estado = 'CANCELADA'
+            cita.notas_recepcion = f"CANCELADA: {form.cleaned_data['motivo_cancelacion']}"
+            cita.save()
+            
+            from django.contrib import messages
+            messages.warning(request, 'Cita cancelada exitosamente')
+            return redirect('citas_actuales')
+    else:
+        form = CancelarCitaForm()
+    
+    return render(request, 'core/cancelar_cita.html', {
+        'form': form,
+        'cita': cita
+    })
+
+@login_required(login_url='login')
+def cuentas_por_cobrar(request):
+    """Lista de cuentas pendientes de pago"""
+    if request.user.rol != 'ADMIN':
+        return redirect('panel')
+    
+    # Pagos pendientes o parciales
+    pagos = Pago.objects.filter(
+        estado__in=['PENDIENTE', 'PARCIAL']
+    ).select_related('cita', 'cita__paciente', 'cita__tutor', 'cita__veterinario').order_by('-created_at')
+    
+    total_adeudado = pagos.aggregate(total=Sum('saldo_pendiente'))['total'] or 0
+    
+    return render(request, 'core/cuentas_por_cobrar.html', {
+        'pagos': pagos,
+        'total_adeudado': total_adeudado
+    })
+
+@login_required(login_url='login')
+def registrar_abono(request, pago_id):
+    """Registrar un abono a un pago pendiente"""
+    pago = get_object_or_404(Pago, id=pago_id)
+    
+    if request.method == 'POST':
+        form = AbonoForm(request.POST)
+        if form.is_valid():
+            monto_abono = form.cleaned_data['monto']
+            
+            # Validar que no exceda saldo
+            if monto_abono > pago.saldo_pendiente:
+                from django.contrib import messages
+                messages.error(request, f'El abono (${monto_abono}) excede el saldo pendiente (${pago.saldo_pendiente})')
+                return redirect('registrar_abono', pago_id=pago.id)
+            
+            # Crear abono
+            Abono.objects.create(
+                pago=pago,
+                monto=monto_abono,
+                metodo_pago=form.cleaned_data['metodo_pago'],
+                registrado_por=request.user,
+                notas=form.cleaned_data.get('notas', '')
+            )
+            
+            # Actualizar pago
+            pago.monto_pagado += monto_abono
+            pago.saldo_pendiente -= monto_abono
+            
+            if pago.saldo_pendiente == 0:
+                pago.estado = 'PAGADO'
+                pago.fecha_pago_completo = timezone.now()
+            else:
+                pago.estado = 'PARCIAL'
+            
+            pago.save()
+            
+            from django.contrib import messages
+            messages.success(request, f'Abono de ${monto_abono} registrado correctamente. Saldo restante: ${pago.saldo_pendiente}')
+            return redirect('cuentas_por_cobrar')
+    else:
+        form = AbonoForm()
+    
+    return render(request, 'core/registrar_abono.html', {
+        'form': form,
+        'pago': pago
+    })

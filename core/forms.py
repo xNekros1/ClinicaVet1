@@ -338,3 +338,73 @@ class HorarioMultipleForm(forms.Form):
         widget=forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
         label='Hora de fin'
     )
+
+    
+
+# ============================================================================
+# FORMULARIOS: PAGOS Y GESTIÓN DE CITAS
+# ============================================================================
+
+class CitaFinalizarForm(forms.Form):
+    """Formulario para finalizar una cita y registrar pago"""
+    monto = forms.DecimalField(
+        max_digits=10,
+        decimal_places=0,
+        min_value=0,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0'}),
+        label='Monto Total'
+    )
+    observaciones = forms.CharField(
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+        label='Observaciones Clínicas',
+        required=False
+    )
+    pago_inmediato = forms.BooleanField(
+        required=False,
+        initial=True,
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        label='¿El cliente pagó hoy?'
+    )
+    metodo_pago = forms.ChoiceField(
+        choices=[
+            ('EFECTIVO', 'Efectivo'),
+            ('DEBITO', 'Débito'),
+            ('CREDITO', 'Crédito'),
+            ('TRANSFERENCIA', 'Transferencia'),
+        ],
+        widget=forms.Select(attrs={'class': 'form-select'}),
+        label='Método de Pago',
+        required=False
+    )
+
+class CancelarCitaForm(forms.Form):
+    """Formulario para cancelar una cita"""
+    motivo_cancelacion = forms.CharField(
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        label='Motivo de Cancelación'
+    )
+
+class AbonoForm(forms.Form):
+    """Formulario para registrar un abono/pago parcial"""
+    monto = forms.DecimalField(
+        max_digits=10,
+        decimal_places=0,
+        min_value=1,
+        widget=forms.NumberInput(attrs={'class': 'form-control'}),
+        label='Monto del Abono'
+    )
+    metodo_pago = forms.ChoiceField(
+        choices=[
+            ('EFECTIVO', 'Efectivo'),
+            ('DEBITO', 'Débito'),
+            ('CREDITO', 'Crédito'),
+            ('TRANSFERENCIA', 'Transferencia'),
+        ],
+        widget=forms.Select(attrs={'class': 'form-select'}),
+        label='Método de Pago'
+    )
+    notas = forms.CharField(
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+        label='Notas',
+        required=False
+    )

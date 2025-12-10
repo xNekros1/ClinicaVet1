@@ -1,0 +1,128 @@
+{% extends 'core/panel.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="mb-1">Registrar Abono</h3>
+                    <p class="text-muted mb-0">Pago parcial</p>
+                </div>
+                <a href="{% url 'cuentas_por_cobrar' %}" class="btn btn-outline-secondary rounded-pill">
+                    <i class="bi bi-arrow-left me-2"></i> Volver
+                </a>
+            </div>
+
+            <div class="row">
+                <!-- Info del pago -->
+                <div class="col-md-5 mb-4">
+                    <div class="card border-0 shadow rounded-3 h-100">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Información del Pago</h5>
+
+                            <div class="mb-3">
+                                <strong>Paciente:</strong><br>
+                                {{ pago.cita.paciente.nombre }}
+                            </div>
+
+                            <div class="mb-3">
+                                <strong>Tutor:</strong><br>
+                                {{ pago.cita.tutor.nombre }}<br>
+                                <small class="text-muted">{{ pago.cita.tutor.telefono }}</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <strong>Fecha de Cita:</strong><br>
+                                {{ pago.cita.fecha_hora|date:"d/m/Y H:i" }}
+                            </div>
+
+                            <hr>
+
+                            <div class="mb-2">
+                                <strong>Monto Total:</strong>
+                                <span class="float-end fw-bold">${{ pago.monto_total|floatformat:0 }}</span>
+                            </div>
+
+                            <div class="mb-2">
+                                <strong>Ya Pagado:</strong>
+                                <span class="float-end text-success">${{ pago.monto_pagado|floatformat:0 }}</span>
+                            </div>
+
+                            <div class="mb-0">
+                                <strong>Saldo Pendiente:</strong>
+                                <span class="float-end text-danger fw-bold fs-5">${{ pago.saldo_pendiente|floatformat:0
+                                    }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulario de abono -->
+                <div class="col-md-7">
+                    <div class="card border-0 shadow rounded-3">
+                        <div class="card-body p-4">
+                            <h5 class="card-title mb-4">Registrar Nuevo Abono</h5>
+
+                            <form method="POST">
+                                {% csrf_token %}
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Monto del Abono ($)</label>
+                                    {{ form.monto }}
+                                    {% if form.monto.errors %}
+                                    <div class="text-danger small">{{ form.monto.errors }}</div>
+                                    {% endif %}
+                                    <small class="text-muted">Máximo: ${{ pago.saldo_pendiente|floatformat:0 }}</small>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Método de Pago</label>
+                                    {{ form.metodo_pago }}
+                                    {% if form.metodo_pago.errors %}
+                                    <div class="text-danger small">{{ form.metodo_pago.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Notas (Opcional)</label>
+                                    {{ form.notas }}
+                                </div>
+
+                                <button type="submit" class="btn btn-success btn-lg w-100 rounded-pill">
+                                    <i class="bi bi-cash-coin me-2"></i> Registrar Abono
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Historial de abonos -->
+                    {% if pago.abonos.all %}
+                    <div class="card border-0 shadow rounded-3 mt-4">
+                        <div class="card-body">
+                            <h6 class="card-title mb-3">Historial de Abonos</h6>
+                            <div class="list-group list-group-flush">
+                                {% for abono in pago.abonos.all %}
+                                <div class="list-group-item px-0">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <strong>${{ abono.monto|floatformat:0 }}</strong>
+                                            <span class="badge bg-secondary ms-2">{{ abono.get_metodo_pago_display
+                                                }}</span>
+                                        </div>
+                                        <small class="text-muted">{{ abono.fecha|date:"d/m/Y H:i" }}</small>
+                                    </div>
+                                    {% if abono.notas %}
+                                    <small class="text-muted">{{ abono.notas }}</small>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

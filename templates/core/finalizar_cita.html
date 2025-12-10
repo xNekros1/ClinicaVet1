@@ -1,0 +1,88 @@
+{% extends 'core/panel.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="mb-1">Finalizar Cita</h3>
+                    <p class="text-muted mb-0">Paciente: {{ cita.paciente.nombre }}</p>
+                </div>
+                <a href="{% url 'listar_citas_actuales' %}" class="btn btn-outline-secondary rounded-pill">
+                    <i class="bi bi-arrow-left me-2"></i> Volver
+                </a>
+            </div>
+
+            <div class="card border-0 shadow rounded-3">
+                <div class="card-body p-4">
+                    <!-- Info de la cita -->
+                    <div class="alert alert-info rounded-3 mb-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Tutor:</strong> {{ cita.paciente.tutor.nombre }}<br>
+                                <strong>Fecha:</strong> {{ cita.fecha_hora|date:"d/m/Y H:i" }}
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Veterinario:</strong> {{ cita.veterinario }}<br>
+                                <strong>Motivo:</strong> {{ cita.motivo_consulta|truncatewords:10 }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Monto Total ($)</label>
+                                {{ form.monto }}
+                                {% if form.monto.errors %}
+                                <div class="text-danger small">{{ form.monto.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Observaciones Clínicas</label>
+                                {{ form.observaciones }}
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-check">
+                                    {{ form.pago_inmediato }}
+                                    <label class="form-check-label ms-2" for="{{ form.pago_inmediato.id_for_label }}">
+                                        {{ form.pago_inmediato.label }}
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-12" id="metodo-pago-container">
+                                <label class="form-label fw-semibold">Método de Pago</label>
+                                {{ form.metodo_pago }}
+                            </div>
+
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-success btn-lg w-100 rounded-pill">
+                                    <i class="bi bi-check-circle me-2"></i> Finalizar Cita y Registrar Pago
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Mostrar/ocultar método de pago según checkbox
+    const pagoInmediato = document.getElementById('{{ form.pago_inmediato.id_for_label }}');
+    const metodoPagoContainer = document.getElementById('metodo-pago-container');
+
+    function toggleMetodoPago() {
+        metodoPagoContainer.style.display = pagoInmediato.checked ? 'block' : 'none';
+    }
+
+    pagoInmediato.addEventListener('change', toggleMetodoPago);
+    toggleMetodoPago(); // Ejecutar al cargar
+</script>
+{% endblock %}
