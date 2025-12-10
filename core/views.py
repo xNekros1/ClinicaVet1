@@ -458,14 +458,34 @@ def listar_citas_actuales(request):
     if request.user.rol not in ['ADMIN', 'VETERINARIO']:
         return redirect('panel')
     
-    # Mostrar citas de hoy que estén AGENDADAS, CONFIRMADAS o EN_CURSO
     hoy = timezone.localdate()
-    citas = Cita.objects.filter(
-        fecha_hora__date=hoy,
-        estado__in=['AGENDADA', 'CONFIRMADA', 'EN_CURSO']
-    ).order_by('fecha_hora')
+    filtro = request.GET.get('filtro', 'hoy')
     
-    return render(request, 'core/listar_citas_actuales.html', {'citas': citas, 'hoy': hoy})
+    # Base query
+    citas = Cita.objects.select_related('paciente', 'paciente__tutor', 'veterinario')
+    
+    # Aplicar filtros de fecha
+    if filtro == 'hoy':
+        citas = citas.filter(fecha_hora__date=hoy)
+    elif filtro == 'semana':
+        inicio_semana = hoy - timedelta(days=hoy.weekday())
+        fin_semana = inicio_semana + timedelta(days=6)
+        citas = citas.filter(fecha_hora__date__range=[inicio_semana, fin_semana])
+    elif filtro == 'mes':
+        citas = citas.filter(
+            fecha_hora__year=hoy.year,
+            fecha_hora__month=hoy.month
+        )
+    # Si filtro == 'todas', no aplicamos filtro de fecha
+    
+    # Ordenar
+    citas = citas.order_by('-fecha_hora')
+    
+    return render(request, 'core/listar_citas_actuales.html', {
+        'citas': citas,
+        'hoy': hoy,
+        'filtro_actual': filtro
+    })
 
 @login_required(login_url='login')
 def finalizar_cita(request, pk):
