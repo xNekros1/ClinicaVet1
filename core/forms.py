@@ -411,9 +411,17 @@ class AbonoForm(forms.Form):
     )
 
 class HistorialClinicoForm(forms.ModelForm):
+    veterinario = forms.ModelChoiceField(
+        queryset=Veterinario.objects.all(),
+        required=False,
+        label='Veterinario',
+        widget=forms.Select(attrs={'class': 'form-select'}),
+        help_text='Solo requerido si registras como administrador'
+    )
+    
     class Meta:
         model = HistorialClinico
-        fields = ['motivo', 'diagnostico', 'tratamiento', 'notas']
+        fields = ['veterinario', 'motivo', 'diagnostico', 'tratamiento', 'notas']
         widgets = {
             'motivo': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
             'diagnostico': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),

@@ -903,8 +903,21 @@ def agregar_historial(request, paciente_id):
         if form.is_valid():
             historial = form.save(commit=False)
             historial.paciente = paciente
-            historial.veterinario = request.user.veterinario if hasattr(request.user, 'veterinario') else None
-            historial.fecha_atencion = timezone.now()  # Asignar fecha actual
+            historial.fecha_atencion = timezone.now()
+            
+            # Asignar veterinario: si es veterinario usa su perfil, si es admin usa el seleccionado
+            if hasattr(request.user, 'veterinario'):
+                historial.veterinario = request.user.veterinario
+            else:
+                # Admin debe seleccionar veterinario del formulario
+                historial.veterinario = form.cleaned_data.get('veterinario')
+                if not historial.veterinario:
+                    messages.error(request, 'Debe seleccionar un veterinario.')
+                    return render(request, 'core/agregar_historial.html', {
+                        'form': form,
+                        'paciente': paciente
+                    })
+            
             historial.save()
             messages.success(request, 'Consulta registrada exitosamente.')
             return redirect('ficha_medica', paciente_id=paciente_id)
