@@ -888,7 +888,7 @@ def registrar_abono(request, pago_id):
     })
 @login_required(login_url='login')
 def agregar_historial(request, paciente_id):
-    \"\"\"Agregar entrada de historial clínico\"\"\"
+    """Agregar entrada de historial clínico"""
     from .models import HistorialClinico
     
     paciente = get_object_or_404(Paciente, id=paciente_id)
@@ -907,7 +907,7 @@ def agregar_historial(request, paciente_id):
             messages.success(request, 'Consulta registrada exitosamente.')
             return redirect('ficha_medica_paciente', pk=paciente_id)
     else:
-        form = Historial ClinicoForm()
+        form = HistorialClinicoForm()
     
     return render(request, 'core/agregar_historial.html', {
         'form': form,
