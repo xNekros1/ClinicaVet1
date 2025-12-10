@@ -18,6 +18,17 @@
                     <form method="POST">
                         {% csrf_token %}
 
+                        {% if form.veterinario %}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">{{ form.veterinario.label }}</label>
+                            {{ form.veterinario }}
+                            <small class="form-text text-muted">{{ form.veterinario.help_text }}</small>
+                            {% if form.veterinario.errors %}
+                            <div class="text-danger small">{{ form.veterinario.errors }}</div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
                         <div class="mb-3">
                             <label class="form-label fw-semibold">{{ form.motivo.label }}</label>
                             {{ form.motivo }}
