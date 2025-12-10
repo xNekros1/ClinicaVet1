@@ -407,7 +407,9 @@ class AbonoForm(forms.Form):
         widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
         label='Notas',
         required=False
-    )class HistorialClinicoForm(forms.ModelForm):
+    )
+
+class HistorialClinicoForm(forms.ModelForm):
     class Meta:
         model = HistorialClinico
         fields = ['motivo', 'diagnostico', 'tratamiento', 'notas']
