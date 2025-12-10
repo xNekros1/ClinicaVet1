@@ -63,12 +63,18 @@
                         </td>
                         <td class="text-end pe-4">
                             <div class="btn-group" role="group">
-                                <button type="button" class="btn btn-outline-primary btn-sm rounded-pill me-1" disabled>
+                                <a href="{% url 'editar_usuario' usuario.id %}"
+                                    class="btn btn-outline-primary btn-sm rounded-pill me-1">
                                     <i class="bi bi-pencil"></i> Editar
-                                </button>
-                                <button type="button" class="btn btn-outline-danger btn-sm rounded-pill" disabled>
-                                    <i class="bi bi-trash"></i> Eliminar
-                                </button>
+                                </a>
+                                <form method="post" action="{% url 'eliminar_usuario' usuario.id %}"
+                                    style="display: inline;"
+                                    onsubmit="return confirm('¿Estás seguro de eliminar a {{ usuario.nombre }} {{ usuario.apellido }}?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill">
+                                        <i class="bi bi-trash"></i> Eliminar
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>

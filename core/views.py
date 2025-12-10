@@ -446,22 +446,114 @@ def gestion_usuarios(request):
 def crear_usuario(request):
     if request.user.rol != 'ADMIN':
         return redirect('gestion_usuarios')
-    # Solo renderiza el formulario, no guarda datos (CRUD no funcional)
-    form = PersonalForm()
+    
+    if request.method == 'POST':
+        form = PersonalForm(request.POST)
+        if form.is_valid():
+            usuario = form.save(commit=False)
+            # Establecer contraseña inicial
+            password = form.cleaned_data.get('password', 'changeme123')
+            usuario.set_password(password)
+            usuario.save()
+            messages.success(request, f'Usuario {usuario.username} creado exitosamente.')
+            return redirect('gestion_usuarios')
+    else:
+        form = PersonalForm()
+    
     return render(request, 'core/usuario_form.html', {'form': form})
 
 @login_required(login_url='login')
 def crear_veterinario(request):
     if request.user.rol != 'ADMIN':
         return redirect('gestion_usuarios')
-    # Solo renderiza el formulario, no guarda datos (CRUD no funcional)
-    form_usuario = PersonalForm(initial={'rol': 'VETERINARIO'})
-    form_veterinario = VeterinarioForm()
+    
+    if request.method == 'POST':
+        form_usuario = PersonalForm(request.POST)
+        form_veterinario = VeterinarioForm(request.POST)
+        
+        if form_usuario.is_valid() and form_veterinario.is_valid():
+            from django.db import transaction
+            with transaction.atomic():
+                # Crear usuario
+                usuario = form_usuario.save(commit=False)
+                usuario.rol = 'VETERINARIO'
+                password = form_usuario.cleaned_data.get('password', 'changeme123')
+                usuario.set_password(password)
+                usuario.save()
+                
+                # Crear perfil veterinario
+                veterinario = form_veterinario.save(commit=False)
+                veterinario.usuario = usuario
+                veterinario.save()
+                
+            messages.success(request, f'Veterinario {usuario.username} creado exitosamente.')
+            return redirect('gestion_usuarios')
+    else:
+        form_usuario = PersonalForm(initial={'rol': 'VETERINARIO'})
+        form_veterinario = VeterinarioForm()
+    
     context = {
         'form_usuario': form_usuario,
         'form_veterinario': form_veterinario
     }
     return render(request, 'core/veterinario_form.html', context)
+
+@login_required(login_url='login')
+def editar_usuario(request, usuario_id):
+    if request.user.rol != 'ADMIN':
+        return redirect('gestion_usuarios')
+    
+    usuario = get_object_or_404(Usuario, id=usuario_id)
+    
+    if request.method == 'POST':
+        form = PersonalForm(request.POST, instance=usuario)
+        if form.is_valid():
+            usuario = form.save(commit=False)
+            # Solo actualizar contraseña si se proporciona una nueva
+            new_password = form.cleaned_data.get('password')
+            if new_password:
+                usuario.set_password(new_password)
+            usuario.save()
+            messages.success(request, f'Usuario {usuario.username} actualizado exitosamente.')
+            return redirect('gestion_usuarios')
+    else:
+        form = PersonalForm(instance=usuario)
+    
+    return render(request, 'core/usuario_form.html', {
+        'form': form,
+        'usuario': usuario,
+        'editando': True
+    })
+
+@login_required(login_url='login')
+def eliminar_usuario(request, usuario_id):
+    if request.user.rol != 'ADMIN':
+        return redirect('gestion_usuarios')
+    
+    usuario = get_object_or_404(Usuario, id=usuario_id)
+    
+    # Validaciones de seguridad
+    if usuario.id == request.user.id:
+        messages.error(request, 'No puedes eliminar tu propia cuenta.')
+        return redirect('gestion_usuarios')
+    
+    # Verificar que no sea el último admin
+    if usuario.rol == 'ADMIN':
+        admin_count = Usuario.objects.filter(rol='ADMIN', is_active=True).count()
+        if admin_count <= 1:
+            messages.error(request, 'No puedes eliminar el último administrador del sistema.')
+            return redirect('gestion_usuarios')
+    
+    if request.method == 'POST':
+        nombre_completo = f"{usuario.nombre} {usuario.apellido}"
+        usuario.delete()
+        messages.success(request, f'Usuario {nombre_completo} eliminado exitosamente.')
+        return redirect('gestion_usuarios')
+    
+    return render(request, 'core/confirmar_eliminacion.html', {
+        'usuario': usuario,
+        'tipo': 'usuario'
+    })
 
 # ============================================================================
 # VISTAS: CITAS ACTUALES (ADMIN/VETERINARIO)

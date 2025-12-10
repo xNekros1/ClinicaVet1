@@ -50,6 +50,8 @@ from core.views import (
     gestion_usuarios,
     crear_usuario,
     crear_veterinario,
+    editar_usuario,
+    eliminar_usuario,
 
         # Vistas de Citas Actuales
     listar_citas_actuales,
@@ -139,6 +141,8 @@ urlpatterns = [
     path('gestion-usuarios/', gestion_usuarios, name='gestion_usuarios'),
     path('gestion-usuarios/nuevo/', crear_usuario, name='crear_usuario'),
     path('gestion-usuarios/veterinario/nuevo/', crear_veterinario, name='crear_veterinario'),
+    path('gestion-usuarios/<int:usuario_id>/editar/', editar_usuario, name='editar_usuario'),
+    path('gestion-usuarios/<int:usuario_id>/eliminar/', eliminar_usuario, name='eliminar_usuario'),
 
     # --- Rutas de Citas Actuales ---
     path('citas-actuales/', listar_citas_actuales, name='listar_citas_actuales'),
