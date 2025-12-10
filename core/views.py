@@ -224,7 +224,20 @@ def eliminar_tutor(request, pk):
 # --- CRUD PACIENTES ---
 @login_required(login_url='login')
 def listar_pacientes(request):
-    pacientes = Paciente.objects.all()
+    if request.user.rol == 'ADMIN' or request.user.rol == 'RECEPCIONISTA':
+        # Admin y recepcionista ven todos los pacientes
+        pacientes = Paciente.objects.all().order_by('nombre')
+    elif request.user.rol == 'VETERINARIO':
+        # Veterinarios solo ven pacientes de sus citas
+        veterinario = request.user.veterinario
+        pacientes_ids = Cita.objects.filter(
+            veterinario=veterinario
+        ).values_list('paciente_id', flat=True).distinct()
+        pacientes = Paciente.objects.filter(id__in=pacientes_ids).order_by('nombre')
+    else:
+        # Otros roles no tienen acceso
+        pacientes = Paciente.objects.none()
+    
     return render(request, 'core/listar_pacientes.html', {'pacientes': pacientes})
 
 @login_required(login_url='login')
