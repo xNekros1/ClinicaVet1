@@ -903,6 +903,7 @@ def agregar_historial(request, paciente_id):
             historial = form.save(commit=False)
             historial.paciente = paciente
             historial.veterinario = request.user.veterinario if hasattr(request.user, 'veterinario') else None
+            historial.fecha_atencion = timezone.now()  # Asignar fecha actual
             historial.save()
             messages.success(request, 'Consulta registrada exitosamente.')
             return redirect('ficha_medica_paciente', pk=paciente_id)
