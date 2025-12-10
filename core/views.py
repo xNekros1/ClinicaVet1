@@ -776,7 +776,7 @@ def finalizar_cita(request, cita_id):
             
             from django.contrib import messages
             messages.success(request, f'Cita finalizada exitosamente. Estado de pago: {pago.get_estado_display()}')
-            return redirect('citas_actuales')
+            return redirect('listar_citas_actuales')
     else:
         form = CitaFinalizarForm()
     
