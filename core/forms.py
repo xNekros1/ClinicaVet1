@@ -3,7 +3,8 @@
 from django import forms
 from .models import (
     Cita, Paciente, Veterinario, Tutor, HorarioDisponible,
-    DIA_SEMANA_CHOICES, Usuario  # 👈 Se agregó Usuario aquí
+    DIA_SEMANA_CHOICES, Usuario, HistorialClinico, Vacuna, Cirugia, Alergia,
+    Pago, Abono
 )
 from django.core.exceptions import ValidationError
 from django.utils import timezone
