@@ -797,7 +797,7 @@ def cuentas_por_cobrar(request):
     # Pagos pendientes o parciales
     pagos = Pago.objects.filter(
         estado__in=['PENDIENTE', 'PARCIAL']
-    ).select_related('cita', 'cita__paciente', 'cita__tutor', 'cita__veterinario').order_by('-created_at')
+    ).select_related('cita', 'cita__paciente', 'cita__paciente__tutor', 'cita__veterinario').order_by('-created_at')
     
     total_adeudado = pagos.aggregate(total=Sum('saldo_pendiente'))['total'] or 0
     
