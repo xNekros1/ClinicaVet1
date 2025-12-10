@@ -67,14 +67,26 @@
                         </td>
                         <td>
                             <span
-                                class="badge {% if cita.estado == 'AGENDADA' %}bg-primary{% elif cita.estado == 'CONFIRMADA' %}bg-success{% else %}bg-info{% endif %} rounded-pill">
+                                class="badge {% if cita.estado == 'AGENDADA' %}bg-primary{% elif cita.estado == 'REALIZADO' %}bg-success{% elif cita.estado == 'CANCELADA' %}bg-danger{% else %}bg-info{% endif %} rounded-pill">
                                 {{ cita.get_estado_display }}
                             </span>
                         </td>
                         <td class="text-end pe-4">
-                            <a href="{% url 'finalizar_cita' cita.id %}" class="btn btn-success btn-sm rounded-pill">
-                                <i class="bi bi-check-lg me-1"></i> Realizar Consulta
+                            {% if cita.estado == 'AGENDADA' %}
+                            {% if user.rol == 'VETERINARIO' or user.rol == 'ADMIN' %}
+                            <a href="{% url 'finalizar_cita' cita.id %}"
+                                class="btn btn-success btn-sm rounded-pill me-1">
+                                <i class="bi bi-check-circle me-1"></i>Finalizar
                             </a>
+                            {% endif %}
+                            <a href="{% url 'cancelar_cita' cita.id %}" class="btn btn-danger btn-sm rounded-pill">
+                                <i class="bi bi-x-circle me-1"></i>Cancelar
+                            </a>
+                            {% elif cita.estado == 'REALIZADO' %}
+                            <span class="badge bg-success"><i class="bi bi-check2"></i> Completada</span>
+                            {% elif cita.estado == 'CANCELADA' %}
+                            <span class="badge bg-danger"><i class="bi bi-x"></i> Cancelada</span>
+                            {% endif %}
                         </td>
                     </tr>
                     {% empty %}
