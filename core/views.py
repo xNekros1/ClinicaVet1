@@ -21,7 +21,7 @@ from .forms import (
     CitaForm, TutorForm, PacienteForm, HorarioForm, PersonalForm,
     VeterinarioForm, CitaFinalizarForm, ReporteForm,
     VacunaForm, CirugiaForm, AlergiaForm, HorarioMultipleForm,
-    CancelarCitaForm, AbonoForm
+    CancelarCitaForm, AbonoForm, HistorialClinicoForm
 )
 
 # -----------------------------------------------------------------

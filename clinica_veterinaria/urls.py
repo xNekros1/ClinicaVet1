@@ -62,6 +62,7 @@ from core.views import (
     agregar_cirugia,
     agregar_alergia,
     toggle_alergia,
+    agregar_historial,
     
     # Vistas de Pagos
     cuentas_por_cobrar,
@@ -154,6 +155,7 @@ urlpatterns = [
     path('paciente/<int:paciente_id>/cirugia/agregar/', agregar_cirugia, name='agregar_cirugia'),
     path('paciente/<int:paciente_id>/alergia/agregar/', agregar_alergia, name='agregar_alergia'),
     path('alergia/<int:alergia_id>/toggle/', toggle_alergia, name='toggle_alergia'),
+    path('paciente/<int:paciente_id>/historial/agregar/', agregar_historial, name='agregar_historial'),
     
     # --- Rutas de Pagos ---
     path('pagos/cuentas-por-cobrar/', cuentas_por_cobrar, name='cuentas_por_cobrar'),

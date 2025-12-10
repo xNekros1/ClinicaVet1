@@ -139,6 +139,11 @@
 
     <!-- Tab: Historial de Consultas -->
     <div class="tab-pane fade" id="consultas" role="tabpanel">
+        <div class="mb-3 text-end">
+            <a href="{% url 'agregar_historial' paciente.id %}" class="btn btn-primary rounded-pill">
+                <i class="bi bi-plus-circle me-2"></i>Registrar Consulta
+            </a>
+        </div>
         <div class="card border-0 shadow-sm rounded-3">
             <div class="card-body">
                 {% if historial_consultas %}

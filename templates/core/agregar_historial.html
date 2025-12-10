@@ -1,0 +1,59 @@
+{% extends 'core/panel.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="mb-1">Registrar Consulta</h3>
+                    <p class="text-muted mb-0">Paciente: {{ paciente.nombre }}</p>
+                </div>
+                <a href="{% url 'ficha_medica' paciente.id %}" class="btn btn-outline-secondary rounded-pill">
+                    <i class="bi bi-arrow-left me-2"></i> Volver
+                </a>
+            </div>
+
+            <div class="card border-0 shadow rounded-3">
+                <div class="card-body p-4">
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">{{ form.motivo.label }}</label>
+                            {{ form.motivo }}
+                            {% if form.motivo.errors %}
+                            <div class="text-danger small">{{ form.motivo.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">{{ form.diagnostico.label }}</label>
+                            {{ form.diagnostico }}
+                            {% if form.diagnostico.errors %}
+                            <div class="text-danger small">{{ form.diagnostico.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">{{ form.tratamiento.label }}</label>
+                            {{ form.tratamiento }}
+                            {% if form.tratamiento.errors %}
+                            <div class="text-danger small">{{ form.tratamiento.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">{{ form.notas.label }}</label>
+                            {{ form.notas }}
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill">
+                            <i class="bi bi-check-circle me-2"></i> Guardar Consulta
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
