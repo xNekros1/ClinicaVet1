@@ -799,7 +799,7 @@ def cancelar_cita(request, cita_id):
             
             from django.contrib import messages
             messages.warning(request, 'Cita cancelada exitosamente')
-            return redirect('citas_actuales')
+            return redirect('listar_citas_actuales')
     else:
         form = CancelarCitaForm()
     
