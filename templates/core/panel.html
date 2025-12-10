@@ -105,6 +105,12 @@
             <i class="bi bi-clipboard-pulse me-3 fs-6"></i>
             <span>Citas Actuales</span>
           </a>
+
+          <a href="{% url 'cuentas_por_cobrar' %}"
+            class="nav-link nav-link-custom d-flex align-items-center {% if 'cuentas_por_cobrar' in request.resolver_match.url_name %}active{% endif %}">
+            <i class="bi bi-cash-coin me-3 fs-6"></i>
+            <span>Cuentas por Cobrar</span>
+          </a>
           {% endif %}
 
           <div class="sidebar-footer mt-auto p-3 text-center text-muted">
