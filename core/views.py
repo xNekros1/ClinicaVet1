@@ -1003,7 +1003,7 @@ def agregar_historial(request, paciente_id):
             else:
                 # Admin debe seleccionar veterinario del formulario
                 historial.veterinario = form.cleaned_data.get('veterinario')
-                if not historial.veterinario:
+                if not historial.veterinario_id:  # Usar veterinario_id en lugar de veterinario
                     messages.error(request, 'Debe seleccionar un veterinario.')
                     return render(request, 'core/agregar_historial.html', {
                         'form': form,
