@@ -886,3 +886,30 @@ def registrar_abono(request, pago_id):
         'form': form,
         'pago': pago
     })
+@login_required(login_url='login')
+def agregar_historial(request, paciente_id):
+    \"\"\"Agregar entrada de historial clínico\"\"\"
+    from .models import HistorialClinico
+    
+    paciente = get_object_or_404(Paciente, id=paciente_id)
+    
+    # Solo veterinarios y admin pueden agregar historial
+    if request.user.rol not in ['VETERINARIO', 'ADMIN']:
+        return redirect('panel')
+    
+    if request.method == 'POST':
+        form = HistorialClinicoForm(request.POST)
+        if form.is_valid():
+            historial = form.save(commit=False)
+            historial.paciente = paciente
+            historial.veterinario = request.user.veterinario if hasattr(request.user, 'veterinario') else None
+            historial.save()
+            messages.success(request, 'Consulta registrada exitosamente.')
+            return redirect('ficha_medica_paciente', pk=paciente_id)
+    else:
+        form = Historial ClinicoForm()
+    
+    return render(request, 'core/agregar_historial.html', {
+        'form': form,
+        'paciente': paciente
+    })
