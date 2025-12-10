@@ -907,7 +907,7 @@ def agregar_historial(request, paciente_id):
             historial.fecha_atencion = timezone.now()  # Asignar fecha actual
             historial.save()
             messages.success(request, 'Consulta registrada exitosamente.')
-            return redirect('ficha_medica_paciente', pk=paciente_id)
+            return redirect('ficha_medica', paciente_id=paciente_id)
     else:
         form = HistorialClinicoForm()
     
